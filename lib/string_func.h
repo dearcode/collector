@@ -33,7 +33,7 @@ int str_tolower(char *src);
 
 int str_part_num(char *src, char *separator);
 
-int str_format(char *str);
+int str_trim(char *str);
 
 char *str_jump_tag(char *src, char *tag);
 

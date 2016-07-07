@@ -7,15 +7,16 @@
 Abort	comm_func.c	/^$/;"	f	signature:(char *msg)
 BASE64_ENCODE_LEN	macro_func.h	235;"	d
 BUFFER_CREATE	buffer.h	5;"	d
+BUFFER_FILE	buffer.h	6;"	d
 BUFFER_INIT	buffer.h	4;"	d
 CC	Makefile	/^CC=gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS=-D__DEBUG__$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DBINMAP_TEST$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DCOMMON_TEST$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DCONF_TEST$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DFILE_FUNC_TEST$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DHASH_TABLE_TEST$/;"	m
 CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DMEMORY_DEBUG -rdynamic$/;"	m
-CFLAGS	Makefile	/^CFLAGS=-Wall -g -rdynamic$/;"	m
 CLOSE	socket_func.h	7;"	d
 CONN_WAIT_RECV	event_center.h	17;"	d
 CONN_WAIT_SEND	event_center.h	16;"	d
@@ -112,7 +113,7 @@ MAX_TIME	macro_const.h	73;"	d
 MAX_TITLE	macro_const.h	71;"	d
 MAX_URL	macro_const.h	69;"	d
 MAX_USER	macro_const.h	88;"	d
-MAX_WAIT_TIME	event_center.c	365;"	d	file:
+MAX_WAIT_TIME	event_center.c	372;"	d	file:
 MEM_ALIGN	macro_const.h	94;"	d
 MEM_ALIGN	macro_func.h	18;"	d
 MEM_ONCE	macro_const.h	21;"	d
@@ -467,14 +468,13 @@ __anon24::ip	socket_func.h	/^	char ip[33];$/;"	m	struct:__anon24	access:public
 __anon24::port	socket_func.h	/^	int port;$/;"	m	struct:__anon24	access:public
 __anon2::auto_pop	buffer.h	/^	int auto_pop;		\/\/如果为1，在缓冲区满后自动调用pop_func将数据推出$/;"	m	struct:__anon2	access:public
 __anon2::data	buffer.h	/^	void *data;		\/\/缓冲区, init是单独分配的data空间，create出来的buffer不能为data重新分配空间$/;"	m	struct:__anon2	access:public
-__anon2::len	buffer.h	/^	int len;$/;"	m	struct:__anon2	access:public
+__anon2::fd	buffer.h	/^	int fd;			\/\/当前类型为BUFFER_FILE为文件fd$/;"	m	struct:__anon2	access:public
+__anon2::len	buffer.h	/^	size_t len;		\/\/当前数据大小$/;"	m	struct:__anon2	access:public
 __anon2::node	buffer.h	/^	list_node_t node;$/;"	m	struct:__anon2	access:public
 __anon2::pop_func	buffer.h	/^	int (*pop_func) (int, void *, size_t);$/;"	m	struct:__anon2	access:public
-__anon2::rpos	buffer.h	/^	void *rpos;		\/\/读指针，指向当前读位置$/;"	m	struct:__anon2	access:public
-__anon2::size	buffer.h	/^	int size;$/;"	m	struct:__anon2	access:public
-__anon2::str	buffer.h	/^	char *str;		\/\/指向缓冲区，使用这个变量需要强制转换类型$/;"	m	struct:__anon2	access:public
-__anon2::type	buffer.h	/^	int type;		\/\/ buffer的类型，BUFFER_INIT的或者是BUFFER_CREATE$/;"	m	struct:__anon2	access:public
-__anon2::wpos	buffer.h	/^	void *wpos;		\/\/写指针，指向缓冲区的有效数据之后$/;"	m	struct:__anon2	access:public
+__anon2::pos	buffer.h	/^	size_t pos;		\/\/读指针，指向当前读位置$/;"	m	struct:__anon2	access:public
+__anon2::size	buffer.h	/^	size_t size;		\/\/分配的空间大小$/;"	m	struct:__anon2	access:public
+__anon2::type	buffer.h	/^	int type;		\/\/ buffer的类型，BUFFER_INIT的或者是BUFFER_CREATE, BUFFER_FILE$/;"	m	struct:__anon2	access:public
 __anon3::func	factory.h	/^	int (*func) (void *);	\/\/回调函数指针$/;"	m	struct:__anon3	access:public
 __anon3::name	factory.h	/^	char name[MAX_ID];	\/\/函数名$/;"	m	struct:__anon3	access:public
 __anon4::addr	factory.h	/^	addr_t addr;$/;"	m	struct:__anon4	access:public
@@ -560,9 +560,9 @@ add_size	file_func.h	/^	int64_t add_size;	\/\/文件附加大小$/;"	m	struct:__
 addr	factory.h	/^	addr_t addr;$/;"	m	struct:__anon4	access:public
 addr_str	factory.h	/^	char addr_str[MAX_IP];$/;"	m	struct:__anon4	access:public
 addr_t	factory.h	/^typedef struct sockaddr_in addr_t;$/;"	t	typeref:struct:sockaddr_in
-aes_decode	string.c	/^$/;"	f	signature:(string_t * input, char *src_key, string_t * output)
+aes_decode	string.c	/^int aes_decode(string_t * input, char *src_key, string_t * output)$/;"	f	signature:(string_t * input, char *src_key, string_t * output)
 aes_decode	string_func.h	/^int aes_decode(string_t * input, char *src_key, string_t * output);$/;"	p	signature:(string_t * input, char *src_key, string_t * output)
-aes_encode	string.c	/^$/;"	f	signature:(string_t * input, char *src_key, string_t * output)
+aes_encode	string.c	/^int aes_encode(string_t * input, char *src_key, string_t * output)$/;"	f	signature:(string_t * input, char *src_key, string_t * output)
 aes_encode	string_func.h	/^int aes_encode(string_t * input, char *src_key, string_t * output);$/;"	p	signature:(string_t * input, char *src_key, string_t * output)
 auto_pop	buffer.h	/^	int auto_pop;		\/\/如果为1，在缓冲区满后自动调用pop_func将数据推出$/;"	m	struct:__anon2	access:public
 b64dec	base64.c	/^static const unsigned char b64dec[256] = {$/;"	v	file:
@@ -620,23 +620,24 @@ blst_width	mem_pool.h	/^	int32_t blst_width;	\/\/当前块列表中元素占内�
 bname	hashdb.h	/^	char bname[128];	\/\/操作日志文件名$/;"	m	struct:hashdb_t	access:public
 bsize	http_func.h	/^	int bsize;$/;"	m	struct:__anon13	access:public
 buffer	file_func.h	/^	buffer_t *buffer;	\/\/文件缓冲区$/;"	m	struct:__anon10	access:public
-buffer_cats	buffer.c	/^int buffer_cats(buffer_t * buf, const char *fmt, ...)$/;"	f	signature:(buffer_t * buf, const char *fmt, ...)
-buffer_cats	buffer.h	/^int buffer_cats(buffer_t * buf, const char *fmt, ...);$/;"	p	signature:(buffer_t * buf, const char *fmt, ...)
-buffer_cleanup	buffer.c	/^int buffer_cleanup(buffer_t * buf)$/;"	f	signature:(buffer_t * buf)
-buffer_cleanup	buffer.h	/^int buffer_cleanup(buffer_t * buf);$/;"	p	signature:(buffer_t * buf)
+buffer_cats	buffer.c	/^int buffer_cats(buffer_t ** buf, const char *fmt, ...)$/;"	f	signature:(buffer_t ** buf, const char *fmt, ...)
+buffer_cats	buffer.h	/^int buffer_cats(buffer_t ** buf, const char *fmt, ...);$/;"	p	signature:(buffer_t ** buf, const char *fmt, ...)
+buffer_cleanup	buffer.c	/^void buffer_cleanup(buffer_t * buf)$/;"	f	signature:(buffer_t * buf)
+buffer_cleanup	buffer.h	/^void buffer_cleanup(buffer_t * buf);$/;"	p	signature:(buffer_t * buf)
 buffer_clear	buffer.c	/^int buffer_clear(buffer_t * buf)$/;"	f	signature:(buffer_t * buf)
 buffer_clear	buffer.h	/^int buffer_clear(buffer_t * buf);$/;"	p	signature:(buffer_t * buf)
 buffer_create	buffer.c	/^int buffer_create(buffer_t ** rbuf, int size)$/;"	f	signature:(buffer_t ** rbuf, int size)
 buffer_create	buffer.h	/^int buffer_create(buffer_t ** rbuf, int size);$/;"	p	signature:(buffer_t ** rbuf, int size)
 buffer_init	buffer.c	/^int buffer_init(buffer_t * buf, int size)$/;"	f	signature:(buffer_t * buf, int size)
 buffer_init	buffer.h	/^int buffer_init(buffer_t * buf, int size);$/;"	p	signature:(buffer_t * buf, int size)
-buffer_loop_read_line	strutil.c	/^$/;"	f	signature:(char **src, char *rbuf)
-buffer_printf	buffer.c	/^int buffer_printf(buffer_t * buf, const char *fmt, ...)$/;"	f	signature:(buffer_t * buf, const char *fmt, ...)
-buffer_printf	buffer.h	/^int buffer_printf(buffer_t * buf, const char *fmt, ...);$/;"	p	signature:(buffer_t * buf, const char *fmt, ...)
+buffer_loop_read_line	strutil.c	/^int buffer_loop_read_line(char **src, char *rbuf)$/;"	f	signature:(char **src, char *rbuf)
+buffer_printf	buffer.c	/^int buffer_printf(buffer_t ** buf, const char *fmt, ...)$/;"	f	signature:(buffer_t ** buf, const char *fmt, ...)
+buffer_printf	buffer.h	/^int buffer_printf(buffer_t ** buf, const char *fmt, ...);$/;"	p	signature:(buffer_t ** buf, const char *fmt, ...)
 buffer_push	buffer.c	/^int buffer_push(buffer_t * buf, void *data, int *size)$/;"	f	signature:(buffer_t * buf, void *data, int *size)
 buffer_push	buffer.h	/^int buffer_push(buffer_t * buf, void *data, int *size);$/;"	p	signature:(buffer_t * buf, void *data, int *size)
 buffer_read	buffer.c	/^int buffer_read(int fd, buffer_t * buf)$/;"	f	signature:(int fd, buffer_t * buf)
 buffer_read	buffer.h	/^int buffer_read(int fd, buffer_t * buf);$/;"	p	signature:(int fd, buffer_t * buf)
+buffer_realloc	buffer.c	/^int buffer_realloc(buffer_t ** buf, int new_size)$/;"	f	signature:(buffer_t ** buf, int new_size)
 buffer_t	buffer.h	/^} buffer_t;$/;"	t	typeref:struct:__anon2
 buffer_write	buffer.c	/^int buffer_write(int fd, buffer_t * buf)$/;"	f	signature:(int fd, buffer_t * buf)
 buffer_write	buffer.h	/^int buffer_write(int fd, buffer_t * buf);$/;"	p	signature:(int fd, buffer_t * buf)
@@ -664,7 +665,7 @@ code	ftp_func.h	/^	uint16_t code;$/;"	m	struct:S_ftp_reply	access:public
 code	ftplib.h	/^	uint16_t code;$/;"	m	struct:S_ftp_reply	access:public
 comm_gets	charset_func.h	/^int comm_gets(char *src, char *sb, char *se, char *dest, int dlen);$/;"	p	signature:(char *src, char *sb, char *se, char *dest, int dlen)
 comm_gets	string_func.h	/^int comm_gets(char *src, char *sb, char *se, char *dest, int dlen);$/;"	p	signature:(char *src, char *sb, char *se, char *dest, int dlen)
-comm_gets	strutil.c	/^$/;"	f	signature:(char *src, char *sb, char *se, char *dest, int dlen)
+comm_gets	strutil.c	/^int comm_gets(char *src, char *sb, char *se, char *dest, int dlen)$/;"	f	signature:(char *src, char *sb, char *se, char *dest, int dlen)
 conf_filter	charset_func.h	/^int conf_filter(char *fbuf, uint32_t len);$/;"	p	signature:(char *fbuf, uint32_t len)
 conf_filter	string_func.h	/^int conf_filter(char *fbuf, int32_t len);$/;"	p	signature:(char *fbuf, int32_t len)
 conn	mysql_func.h	/^	int conn;$/;"	m	struct:__anon22	access:public
@@ -748,9 +749,9 @@ event	factory.h	/^	uint32_t event;		\/\/已有事件$/;"	m	struct:__anon4	access
 event_center_deinit	event_center.c	/^int event_center_deinit()$/;"	f
 event_center_init	event_center.c	/^int event_center_init(int max_conn, int timeout, char *host, int port, callback_t on_accept,	\/\/在接收完连接时调用$/;"	f	signature:(int max_conn, int timeout, char *host, int port, callback_t on_accept, callback_t on_request, callback_t on_response, callback_t on_close )
 event_center_init	event_center.h	/^int event_center_init(int max_conn, int timeout, char *host, int port,$/;"	p	signature:(int max_conn, int timeout, char *host, int port, callback_t on_accept, callback_t on_request, callback_t on_response, callback_t on_close)
-event_center_lock	event_center.c	7;"	d	file:
+event_center_lock	event_center.c	8;"	d	file:
 event_center_t	factory.h	/^} event_center_t;$/;"	t	typeref:struct:__anon7
-event_center_unlock	event_center.c	8;"	d	file:
+event_center_unlock	event_center.c	9;"	d	file:
 event_clean	event_center.c	/^static void event_clean()$/;"	f	file:
 event_clean	event_center.c	/^static void event_clean();$/;"	p	file:
 event_delete	event_center.c	/^static void event_delete(conn_t * conn)$/;"	f	file:	signature:(conn_t * conn)
@@ -783,10 +784,13 @@ factory_wakeup	factory.c	21;"	d	file:
 factory_wakeup_all	factory.c	22;"	d	file:
 factory_worker_count	factory.c	/^int factory_worker_count()$/;"	f
 fbuf	hashdb.h	/^	char fbuf[BUFSIZ];	\/\/文件操作缓冲$/;"	m	struct:hashdb_t	access:public
+fd	buffer.h	/^	int fd;			\/\/当前类型为BUFFER_FILE为文件fd$/;"	m	struct:__anon2	access:public
 fd	factory.h	/^	int fd;$/;"	m	struct:__anon4	access:public
 fd	file_func.h	/^	int fd;$/;"	m	struct:__anon10	access:public
 fd_file_size	file_func.c	/^int64_t fd_file_size(int fd)$/;"	f	signature:(int fd)
 fd_file_size	file_func.h	/^int64_t fd_file_size(int fd);$/;"	p	signature:(int fd)
+file_buffer_create	file_buffer.c	/^int file_buffer_create(buffer_t ** b, char *path)$/;"	f	signature:(buffer_t ** b, char *path)
+file_buffer_create	file_func.h	/^int file_buffer_create(buffer_t ** b, char *path);$/;"	p	signature:(buffer_t ** b, char *path)
 file_buffer_deinit	file_buffer.c	/^void file_buffer_deinit(file_handle_t * file)$/;"	f	signature:(file_handle_t * file)
 file_buffer_deinit	file_func.h	/^void file_buffer_deinit(file_handle_t * file);$/;"	p	signature:(file_handle_t * file)
 file_buffer_flush	file_buffer.c	/^int file_buffer_flush(file_handle_t * file)$/;"	f	signature:(file_handle_t * file)
@@ -923,7 +927,7 @@ generate_filename	file_func.c	/^void generate_filename(char *buf, size_t size)$/
 generate_path	file_func.c	/^void generate_path(char *buf, size_t size, char *prefix, char *suffix)$/;"	f	signature:(char *buf, size_t size, char *prefix, char *suffix)
 get_error	comm_func.c	/^$/;"	f
 get_error	comm_func.h	/^char *get_error();$/;"	p	signature:()
-get_field	strutil.c	/^int get_field(char *src, char *tag, char *dest, size_t dlen) $/;"	f	signature:(char *src, char *tag, char *dest, size_t dlen)
+get_field	strutil.c	/^int get_field(char *src, char *tag, char *dest, size_t dlen)$/;"	f	signature:(char *src, char *tag, char *dest, size_t dlen)
 get_home_dir	comm_func.c	/^$/;"	f	signature:(void)
 get_ip_addr	socket_func.c	/^int get_ip_addr(char *hostname, unsigned int *ip)$/;"	f	signature:(char *hostname, unsigned int *ip)
 get_ip_addr	socket_func.c	/^int get_ip_addr(char *hostname, unsigned int *ip);$/;"	p	file:	signature:(char *hostname, unsigned int *ip)
@@ -1098,11 +1102,11 @@ last_charset_from	charset.c	/^static char last_charset_from[64] = { 0 };$/;"	v	f
 last_charset_to	charset.c	/^static char last_charset_to[64] = { 0 };$/;"	v	file:
 last_gets	charset_func.h	/^int last_gets(char *src, char *start, char *end, char **dest);$/;"	p	signature:(char *src, char *start, char *end, char **dest)
 last_gets	string_func.h	/^int last_gets(char *src, char *start, char *end, char **dest);$/;"	p	signature:(char *src, char *start, char *end, char **dest)
-last_gets	strutil.c	/^$/;"	f	signature:(char *src, char *start, char *end, char **dest)
+last_gets	strutil.c	/^int last_gets(char *src, char *start, char *end, char **dest)$/;"	f	signature:(char *src, char *start, char *end, char **dest)
 legible	comm_func.c	/^char *legible(off_t l) $/;"	f	signature:(off_t l)
 legible	comm_func.h	/^char *legible(off_t l);$/;"	p	signature:(off_t l)
 legible_1	comm_func.c	/^static char *legible_1(const char *repr) $/;"	f	file:	signature:(const char *repr)
-len	buffer.h	/^	int len;$/;"	m	struct:__anon2	access:public
+len	buffer.h	/^	size_t len;		\/\/当前数据大小$/;"	m	struct:__anon2	access:public
 len	charset_func.h	/^	uint16_t len;$/;"	m	struct:T_array	access:public
 len	string_func.h	/^	int32_t len;$/;"	m	struct:string_t	access:public
 level	logger.h	/^	int level;$/;"	m	struct:S_logger	access:public
@@ -1170,7 +1174,7 @@ main	mem_pool.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, ch
 main	xxtea.c	/^int main(int argc, int8_t * argv[])$/;"	f	signature:(int argc, int8_t * argv[])
 make_md5	charset_func.h	/^int make_md5(unsigned char *src, uint16_t len, char *dest);$/;"	p	signature:(unsigned char *src, uint16_t len, char *dest)
 make_md5	string_func.h	/^int make_md5(unsigned char *src, uint16_t len, char *dest);$/;"	p	signature:(unsigned char *src, uint16_t len, char *dest)
-make_md5	strutil.c	/^$/;"	f	signature:(unsigned char *src, uint16_t len, char *dest)
+make_md5	strutil.c	/^int make_md5(unsigned char *src, uint16_t len, char *dest)$/;"	f	signature:(unsigned char *src, uint16_t len, char *dest)
 master	factory.h	/^	worker_t master;$/;"	m	struct:__anon9	access:public
 master	mem_pool.h	/^	memory_t *master;	\/\/指向内存列表中的一个内存块，如果当前使用的内存块剩余空间小于128KB$/;"	m	struct:memory_pool_s	access:public
 master_wakeup	factory.c	7;"	d	file:
@@ -1242,10 +1246,10 @@ min_heap_top	minheap.h	/^timer_event_t *min_heap_top(min_heap_t * s)$/;"	f	signa
 mkdir_p	file_func.c	/^int mkdir_p(char *file)$/;"	f	signature:(char *file)
 move_cut_gets	charset_func.h	/^int move_cut_gets(char **src, char *start, char *end, char **dest);$/;"	p	signature:(char **src, char *start, char *end, char **dest)
 move_cut_gets	string_func.h	/^int move_cut_gets(char **src, char *start, char *end, char **dest);$/;"	p	signature:(char **src, char *start, char *end, char **dest)
-move_cut_gets	strutil.c	/^$/;"	f	signature:(char **src, char *start, char *end, char **dest)
+move_cut_gets	strutil.c	/^int move_cut_gets(char **src, char *start, char *end, char **dest)$/;"	f	signature:(char **src, char *start, char *end, char **dest)
 move_gets	charset_func.h	/^int move_gets(char **src, char *sb, char *se, char *dest);$/;"	p	signature:(char **src, char *sb, char *se, char *dest)
 move_gets	string_func.h	/^int move_gets(char **src, char *sb, char *se, char *dest, int dest_size);$/;"	p	signature:(char **src, char *sb, char *se, char *dest, int dest_size)
-move_gets	strutil.c	/^$/;"	f	signature:(char **src, char *sb, char *se, char *dest, int dest_size)
+move_gets	strutil.c	/^int move_gets(char **src, char *sb, char *se, char *dest, int dest_size)$/;"	f	signature:(char **src, char *sb, char *se, char *dest, int dest_size)
 mp_atest	mem_pool.c	/^int mp_atest()$/;"	f
 mrt_filter_t	http_func.h	/^} mrt_filter_t;$/;"	t	typeref:struct:__anon16
 mrt_mark_list_t	http_func.h	/^} mrt_mark_list_t;$/;"	t	typeref:struct:__anon15
@@ -1303,7 +1307,7 @@ node	mem_pool.h	/^	list_node_t node;$/;"	m	struct:__anon17	access:public
 node	mem_pool.h	/^	list_node_t node;$/;"	m	struct:__anon19	access:public
 note_filter	charset_func.h	/^int note_filter(char *src);$/;"	p	signature:(char *src)
 note_filter	string_func.h	/^int note_filter(char *src);$/;"	p	signature:(char *src)
-note_filter	strutil.c	/^$/;"	f	signature:(char *src)
+note_filter	strutil.c	/^int note_filter(char *src)$/;"	f	signature:(char *src)
 num	file_func.h	/^	int num;		\/\/对此fd操作的次数, 强制关闭到达最大操作次数的fd$/;"	m	struct:__anon10	access:public
 num	minheap.h	/^	unsigned num, size;$/;"	m	struct:min_heap	access:public
 numdigit	comm_func.c	/^int numdigit(long number) $/;"	f	signature:(long number)
@@ -1344,6 +1348,7 @@ port	socket_func.h	/^	unsigned short port;$/;"	m	struct:__anon23	access:public
 portmode	ftp_func.h	/^	int portmode;$/;"	m	struct:S_ftp_session	access:public
 portmode	ftp_func.h	/^	unsigned char portmode:1;$/;"	m	struct:S_ftp_conn	access:public
 portmode	ftplib.h	/^	unsigned char portmode:1;$/;"	m	struct:S_ftp_conn	access:public
+pos	buffer.h	/^	size_t pos;		\/\/读指针，指向当前读位置$/;"	m	struct:__anon2	access:public
 prefix	logger.h	/^	char prefix[MAX_ID];$/;"	m	struct:S_logger	access:public
 prev	binmap.h	/^	binmap_entry_t *prev;	\/* colliding entry *\/$/;"	m	struct:binmap_entry_s	access:public
 prev	ftp_func.h	/^	file_info_t *prev;	\/* ...and next structure. *\/$/;"	m	struct:S_file_info	access:public
@@ -1385,7 +1390,6 @@ retry	ftp_func.h	/^	short int retry;$/;"	m	struct:S_ftp_session	access:public
 retry_interval	ftp_func.h	/^	int retry_interval;$/;"	m	struct:S_ftp_session	access:public
 retry_wait	ftp_func.h	/^void retry_wait(ftp_session_t * fsession);$/;"	p	signature:(ftp_session_t * fsession)
 root	ftp_func.h	/^	char *root;$/;"	m	struct:S_ftp_session	access:public
-rpos	buffer.h	/^	void *rpos;		\/\/读指针，指向当前读位置$/;"	m	struct:__anon2	access:public
 s_zero	macro_func.h	16;"	d
 sbuf	ftp_func.h	/^	char *sbuf;$/;"	m	struct:S_ftp_conn	access:public
 sbuf	ftplib.h	/^	char *sbuf;$/;"	m	struct:S_ftp_conn	access:public
@@ -1401,7 +1405,7 @@ server_config_t	factory.h	/^} server_config_t;$/;"	t	typeref:struct:__anon8
 set_error	comm_func.c	/^$/;"	f	signature:(char *msg, ...)
 set_error	comm_func.h	/^void set_error(char *msg, ...);$/;"	p	signature:(char *msg, ...)
 size	binmap.h	/^	int64_t size;		\/* length of entries array *\/$/;"	m	struct:__anon1	access:public
-size	buffer.h	/^	int size;$/;"	m	struct:__anon2	access:public
+size	buffer.h	/^	size_t size;		\/\/分配的空间大小$/;"	m	struct:__anon2	access:public
 size	charset_func.h	/^	uint16_t size;$/;"	m	struct:T_array	access:public
 size	file_func.h	/^	int64_t size;		\/\/文件打开时的大小$/;"	m	struct:__anon10	access:public
 size	ftp_func.h	/^	off_t size;		\/* file size *\/$/;"	m	struct:S_file_info	access:public
@@ -1465,80 +1469,77 @@ stat	string_func.h	/^	uint8_t stat:1;$/;"	m	struct:string_t	access:public
 state	factory.h	/^	int state;		\/\/1:启动, -1停止$/;"	m	struct:__anon7	access:public
 state	factory.h	/^	int state;$/;"	m	struct:__anon9	access:public
 state	factory.h	/^	int8_t state;$/;"	m	struct:__anon6	access:public
-str	buffer.h	/^	char *str;		\/\/指向缓冲区，使用这个变量需要强制转换类型$/;"	m	struct:__anon2	access:public
 str	string_func.h	/^	char *str;$/;"	m	struct:string_t	access:public
-str_find	strutil.c	/^$/;"	f	signature:(char *src, char *key, char *val, char *sep1, char *sep2)
+str_find	strutil.c	/^int str_find(char *src, char *key, char *val, char *sep1, char *sep2)$/;"	f	signature:(char *src, char *key, char *val, char *sep1, char *sep2)
 str_format	charset_func.h	/^int str_format(char *str);$/;"	p	signature:(char *str)
-str_format	string.c	/^$/;"	p	file:	signature:(char *str)
-str_format	string_func.h	/^int str_format(char *str);$/;"	p	signature:(char *str)
-str_format	strutil.c	/^$/;"	f	signature:(char *str)
-str_format	strutil.c	/^$/;"	p	file:	signature:(char *str)
-str_join	strutil.c	/^$/;"	f	signature:(char **dest, char *src)
-str_jump_part	strutil.c	/^char *str_jump_part(char *src, char *sb, char *se) $/;"	f	signature:(char *src, char *sb, char *se)
+str_join	strutil.c	/^int str_join(char **dest, char *src)$/;"	f	signature:(char **dest, char *src)
+str_jump_part	strutil.c	/^char *str_jump_part(char *src, char *sb, char *se)$/;"	f	signature:(char *src, char *sb, char *se)
 str_jump_tag	string_func.h	/^char *str_jump_tag(char *src, char *tag);$/;"	p	signature:(char *src, char *tag)
-str_jump_tag	strutil.c	/^char *str_jump_tag(char *src, char *tag) $/;"	f	signature:(char *src, char *tag)
-str_lcpy	strutil.c	/^char *str_lcpy(char *src, char tag) $/;"	f	signature:(char *src, char tag)
-str_lcut	strutil.c	/^int str_lcut(char *src, char *dest, size_t dlen, char *tag) $/;"	f	signature:(char *src, char *dest, size_t dlen, char *tag)
-str_ltrim	strutil.c	/^$/;"	f	signature:(char *src)
+str_jump_tag	strutil.c	/^char *str_jump_tag(char *src, char *tag)$/;"	f	signature:(char *src, char *tag)
+str_lcpy	strutil.c	/^char *str_lcpy(char *src, char tag)$/;"	f	signature:(char *src, char tag)
+str_lcut	strutil.c	/^int str_lcut(char *src, char *dest, size_t dlen, char *tag)$/;"	f	signature:(char *src, char *dest, size_t dlen, char *tag)
+str_ltrim	strutil.c	/^int str_ltrim(char *src)$/;"	f	signature:(char *src)
 str_newcpy	charset_func.h	/^char *str_newcpy(char *src);$/;"	p	signature:(char *src)
 str_newcpy	string_func.h	/^char *str_newcpy(char *src, size_t len);$/;"	p	signature:(char *src, size_t len)
-str_newcpy	strutil.c	/^$/;"	f	signature:(char *src, size_t len)
+str_newcpy	strutil.c	/^char *str_newcpy(char *src, size_t len)$/;"	f	signature:(char *src, size_t len)
 str_part_num	charset_func.h	/^int str_part_num(char *src, char *separator);$/;"	p	signature:(char *src, char *separator)
 str_part_num	string_func.h	/^int str_part_num(char *src, char *separator);$/;"	p	signature:(char *src, char *separator)
-str_part_num	strutil.c	/^int str_part_num(char *src, char *separator) $/;"	f	signature:(char *src, char *separator)
-str_rcpy	strutil.c	/^char *str_rcpy(char *src, char tag) $/;"	f	signature:(char *src, char tag)
-str_rcut	strutil.c	/^int str_rcut(char *src, char *dest, size_t dlen, char *tag) $/;"	f	signature:(char *src, char *dest, size_t dlen, char *tag)
-str_rtrim	strutil.c	/^$/;"	f	signature:(char *src)
+str_part_num	strutil.c	/^int str_part_num(char *src, char *separator)$/;"	f	signature:(char *src, char *separator)
+str_rcpy	strutil.c	/^char *str_rcpy(char *src, char tag)$/;"	f	signature:(char *src, char tag)
+str_rcut	strutil.c	/^int str_rcut(char *src, char *dest, size_t dlen, char *tag)$/;"	f	signature:(char *src, char *dest, size_t dlen, char *tag)
+str_rtrim	strutil.c	/^int str_rtrim(char *src)$/;"	f	signature:(char *src)
 str_separate	charset_func.h	/^int str_separate(char **src, char *dest, char *sep);$/;"	p	signature:(char **src, char *dest, char *sep)
 str_separate	string_func.h	/^int str_separate(char **src, char *dest, char *sep);$/;"	p	signature:(char **src, char *dest, char *sep)
-str_separate	strutil.c	/^$/;"	f	signature:(char **src, char *dest, char *sep)
+str_separate	strutil.c	/^int str_separate(char **src, char *dest, char *sep)$/;"	f	signature:(char **src, char *dest, char *sep)
 str_to_time	charset_func.h	/^time_t str_to_time(char *src);$/;"	p	signature:(char *src)
 str_to_time	string_func.h	/^time_t str_to_time(char *src);$/;"	p	signature:(char *src)
-str_to_time	strutil.c	/^$/;"	f	signature:(char *src)
+str_to_time	strutil.c	/^time_t str_to_time(char *src)$/;"	f	signature:(char *src)
 str_to_u32	xxtea.c	/^uint32_t *str_to_u32(char *src, int len, int *rlen, int include)$/;"	f	signature:(char *src, int len, int *rlen, int include)
 str_tolower	charset_func.h	/^int str_tolower(char *src);$/;"	p	signature:(char *src)
 str_tolower	string_func.h	/^int str_tolower(char *src);$/;"	p	signature:(char *src)
-str_tolower	strutil.c	/^$/;"	f	signature:(char *src)
+str_tolower	strutil.c	/^int str_tolower(char *src)$/;"	f	signature:(char *src)
+str_trim	string_func.h	/^int str_trim(char *str);$/;"	p	signature:(char *str)
+str_trim	strutil.c	/^int str_trim(char *str)$/;"	f	signature:(char *str)
 string_add	string_func.h	/^void string_add(string_t * dat, const char *fmt, ...);$/;"	p	signature:(string_t * dat, const char *fmt, ...)
 string_base64_decode	base64.c	/^int string_base64_decode(string_t * src, string_t * dest)$/;"	f	signature:(string_t * src, string_t * dest)
 string_base64_decode	string_func.h	/^int string_base64_decode(string_t * src, string_t * dest);$/;"	p	signature:(string_t * src, string_t * dest)
 string_base64_encode	base64.c	/^int string_base64_encode(string_t * src, string_t * dest)$/;"	f	signature:(string_t * src, string_t * dest)
 string_base64_encode	string_func.h	/^int string_base64_encode(string_t * src, string_t * dest);$/;"	p	signature:(string_t * src, string_t * dest)
-string_cat	string.c	/^$/;"	f	signature:(string_t * dat, string_t * src)
+string_cat	string.c	/^int string_cat(string_t * dat, string_t * src)$/;"	f	signature:(string_t * dat, string_t * src)
 string_cat	string_func.h	/^int string_cat(string_t * dat, string_t * src);$/;"	p	signature:(string_t * dat, string_t * src)
-string_cat_int	string.c	/^$/;"	f	signature:(string_t * dat, int num)
-string_catb	string.c	/^$/;"	f	signature:(string_t * dat, char *src, int slen)
+string_cat_int	string.c	/^int string_cat_int(string_t * dat, int num)$/;"	f	signature:(string_t * dat, int num)
+string_catb	string.c	/^int string_catb(string_t * dat, char *src, int slen)$/;"	f	signature:(string_t * dat, char *src, int slen)
 string_catb	string_func.h	/^int string_catb(string_t * dat, char *src, int len);$/;"	p	signature:(string_t * dat, char *src, int len)
-string_cats	string.c	/^$/;"	f	signature:(string_t * dat, char *src)
+string_cats	string.c	/^int string_cats(string_t * dat, char *src)$/;"	f	signature:(string_t * dat, char *src)
 string_cats	string_func.h	/^int string_cats(string_t * dat, char *src);$/;"	p	signature:(string_t * dat, char *src)
-string_copy	string.c	/^$/;"	f	signature:(string_t * dat, string_t * src)
+string_copy	string.c	/^int string_copy(string_t * dat, string_t * src)$/;"	f	signature:(string_t * dat, string_t * src)
 string_copy	string_func.h	/^int string_copy(string_t * dat, string_t * src);$/;"	p	signature:(string_t * dat, string_t * src)
-string_copyb	string.c	/^$/;"	f	signature:(string_t * dat, char *src, int slen)
+string_copyb	string.c	/^int string_copyb(string_t * dat, char *src, int slen)$/;"	f	signature:(string_t * dat, char *src, int slen)
 string_copyb	string_func.h	/^int string_copyb(string_t * dat, char *src, int len);$/;"	p	signature:(string_t * dat, char *src, int len)
-string_copys	string.c	/^$/;"	f	signature:(string_t * dat, char *src)
+string_copys	string.c	/^int string_copys(string_t * dat, char *src)$/;"	f	signature:(string_t * dat, char *src)
 string_copys	string_func.h	/^int string_copys(string_t * dat, char *src);$/;"	p	signature:(string_t * dat, char *src)
-string_create	string.c	/^$/;"	f	signature:(int32_t size)
+string_create	string.c	/^string_t *string_create(int32_t size)$/;"	f	signature:(int32_t size)
 string_create	string_func.h	/^string_t *string_create(int32_t len);$/;"	p	signature:(int32_t len)
-string_fetch	string.c	/^$/;"	f	signature:(string_t * src, char *begin, char *end, string_t * dest)
+string_fetch	string.c	/^int string_fetch(string_t * src, char *begin, char *end, string_t * dest)$/;"	f	signature:(string_t * src, char *begin, char *end, string_t * dest)
 string_fetch	string_func.h	/^int string_fetch(string_t * src, char *begin, char *end, string_t * dest);$/;"	p	signature:(string_t * src, char *begin, char *end, string_t * dest)
-string_free	string.c	/^$/;"	f	signature:(string_t * src)
+string_free	string.c	/^void string_free(string_t * src)$/;"	f	signature:(string_t * src)
 string_free	string_func.h	/^void string_free(string_t * src);$/;"	p	signature:(string_t * src)
-string_ltrim	string.c	/^$/;"	f	signature:(string_t * src)
+string_ltrim	string.c	/^} int string_ltrim(string_t * src)$/;"	f	signature:(string_t * src)
 string_ltrim	string_func.h	/^int string_ltrim(string_t * src);$/;"	p	signature:(string_t * src)
-string_move_fetch	string.c	/^$/;"	f	signature:(string_t * src, char *begin, char *end, string_t * dest)
+string_move_fetch	string.c	/^int string_move_fetch(string_t * src, char *begin, char *end, string_t * dest)$/;"	f	signature:(string_t * src, char *begin, char *end, string_t * dest)
 string_move_fetch	string_func.h	/^int string_move_fetch(string_t * src, char *begin, char *end, string_t * dest);$/;"	p	signature:(string_t * src, char *begin, char *end, string_t * dest)
 string_new	charset_func.h	/^string_t *string_new(char *src, uint32_t len);$/;"	p	signature:(char *src, uint32_t len)
-string_new	string.c	/^$/;"	f	signature:(int32_t size, const char *fmt, ...)
+string_new	string.c	/^string_t *string_new(int32_t size, const char *fmt, ...)$/;"	f	signature:(int32_t size, const char *fmt, ...)
 string_new	string_func.h	/^string_t *string_new(int32_t len, const char *fmt, ...);$/;"	p	signature:(int32_t len, const char *fmt, ...)
-string_printf	string.c	/^$/;"	f	signature:(string_t * str, const char *fmt, ...)
+string_printf	string.c	/^int string_printf(string_t * str, const char *fmt, ...)$/;"	f	signature:(string_t * str, const char *fmt, ...)
 string_printf	string_func.h	/^int string_printf(string_t * str, const char *fmt, ...);$/;"	p	signature:(string_t * str, const char *fmt, ...)
-string_realloc	string.c	/^$/;"	f	signature:(string_t * src, int32_t size)
+string_realloc	string.c	/^int string_realloc(string_t * src, int32_t size)$/;"	f	signature:(string_t * src, int32_t size)
 string_realloc	string_func.h	/^int string_realloc(string_t * src, int32_t size);$/;"	p	signature:(string_t * src, int32_t size)
-string_replace	string.c	/^$/;"	f	signature:(string_t * src, char *from, char *to)
+string_replace	string.c	/^int string_replace(string_t * src, char *from, char *to)$/;"	f	signature:(string_t * src, char *from, char *to)
 string_replace	string_func.h	/^int string_replace(string_t * src, char *from, char *to);$/;"	p	signature:(string_t * src, char *from, char *to)
-string_replace_part	string.c	/^$/;"	f	signature:(string_t * src, char *from_begin, char *from_end, char *to)
+string_replace_part	string.c	/^int string_replace_part(string_t * src, char *from_begin, char *from_end, char *to)$/;"	f	signature:(string_t * src, char *from_begin, char *from_end, char *to)
 string_replace_part	string_func.h	/^int string_replace_part(string_t * src, char *from_begin, char *from_end, char *to);$/;"	p	signature:(string_t * src, char *from_begin, char *from_end, char *to)
-string_rtrim	string.c	/^$/;"	f	signature:(string_t * src)
+string_rtrim	string.c	/^int string_rtrim(string_t * src)$/;"	f	signature:(string_t * src)
 string_rtrim	string_func.h	/^int string_rtrim(string_t * src);$/;"	p	signature:(string_t * src)
 string_t	string_func.h	/^typedef struct string_t {$/;"	s
 string_t	string_func.h	/^} string_t;$/;"	t	typeref:struct:string_t
@@ -1551,7 +1552,7 @@ string_xxtea_decode	encrypt_func.h	/^char *string_xxtea_decode(char *src, char *
 string_xxtea_decode	xxtea.c	/^char *string_xxtea_decode(char *src, char *key)$/;"	f	signature:(char *src, char *key)
 string_xxtea_encode	encrypt_func.h	/^char *string_xxtea_encode(char *src, char *key);$/;"	p	signature:(char *src, char *key)
 string_xxtea_encode	xxtea.c	/^char *string_xxtea_encode(char *src, char *key)$/;"	f	signature:(char *src, char *key)
-string_zero	string.c	/^$/;"	f	signature:(string_t * src)
+string_zero	string.c	/^void string_zero(string_t * src)$/;"	f	signature:(string_t * src)
 string_zero	string_func.h	/^void string_zero(string_t * src);$/;"	p	signature:(string_t * src)
 stype	ftp_func.h	/^enum stype {$/;"	g
 stype	ftplib.h	/^enum stype {$/;"	g
@@ -1581,7 +1582,7 @@ tried_signal	comm_func.c	/^$/;"	f	file:	signature:(const int signo, void *pfunc)
 try_do_cwd	ftp_func.h	/^int try_do_cwd(ftp_conn_t * ftp, char *path, int mkd);$/;"	p	signature:(ftp_conn_t * ftp, char *path, int mkd)
 tstamp	ftp_func.h	/^	time_t tstamp;		\/* time-stamp *\/$/;"	m	struct:S_file_info	access:public
 tstamp	ftplib.h	/^	time_t tstamp;		\/* time-stamp *\/$/;"	m	struct:S_file_info	access:public
-type	buffer.h	/^	int type;		\/\/ buffer的类型，BUFFER_INIT的或者是BUFFER_CREATE$/;"	m	struct:__anon2	access:public
+type	buffer.h	/^	int type;		\/\/ buffer的类型，BUFFER_INIT的或者是BUFFER_CREATE, BUFFER_FILE$/;"	m	struct:__anon2	access:public
 type	file_func.h	/^	int type;		\/\/FD_TYPE_SOCKET或者FD_TYPE_FILE, 标识当前handle是文件还是网络$/;"	m	struct:__anon10	access:public
 type	ftp_func.h	/^	enum ftype type;	\/* file type *\/$/;"	m	struct:S_file_info	typeref:enum:S_file_info::ftype	access:public
 type	ftplib.h	/^	enum ftype type;	\/* file type *\/$/;"	m	struct:S_file_info	typeref:enum:S_file_info::ftype	access:public
@@ -1595,9 +1596,9 @@ uri_encode	encrypt_func.h	/^void uri_encode(const char *psrc, const int len, cha
 url	http_func.h	/^	char url[MAX_URL];$/;"	m	struct:__anon13	access:public
 url	http_func.h	/^	char url[MAX_URL];$/;"	m	struct:__anon14	access:public
 urldecode	string_func.h	/^int urldecode(char *str, int len);$/;"	p	signature:(char *str, int len)
-urldecode	strutil.c	/^$/;"	f	signature:(char *str, int len)
+urldecode	strutil.c	/^int urldecode(char *str, int len)$/;"	f	signature:(char *str, int len)
 urlencode	string_func.h	/^int urlencode(char *src, int slen, char *dest, int dlen);$/;"	p	signature:(char *src, int slen, char *dest, int dlen)
-urlencode	strutil.c	/^$/;"	f	signature:(char *src, int slen, char *dest, int dlen)
+urlencode	strutil.c	/^int urlencode(char *src, int slen, char *dest, int dlen)$/;"	f	signature:(char *src, int slen, char *dest, int dlen)
 used	binmap.h	/^	int32_t used;		\/* number of entries in table *\/$/;"	m	struct:__anon1	access:public
 used	hashdb.h	/^	uint16_t used;		\/* number of entries in table *\/$/;"	m	struct:hashdb_t	access:public
 used	hashmap.h	/^	int64_t used;		\/* number of entries in table *\/$/;"	m	struct:__anon12	access:public
@@ -1639,7 +1640,6 @@ worker_t	factory.h	/^} worker_t;$/;"	t	typeref:struct:__anon6
 worker_type	factory.h	32;"	d
 worker_wait	factory.c	/^int worker_wait(worker_t * wkr)$/;"	f	signature:(worker_t * wkr)
 worker_wakeup	factory.c	5;"	d	file:
-wpos	buffer.h	/^	void *wpos;		\/\/写指针，指向缓冲区的有效数据之后$/;"	m	struct:__anon2	access:public
 wtimer_alloc	ftp_func.h	/^struct wput_timer *wtimer_alloc();$/;"	p	signature:()
 wtimer_elapsed	ftp_func.h	/^double wtimer_elapsed(struct wput_timer *wt);$/;"	p	signature:(struct wput_timer *wt)
 wtimer_reset	ftp_func.h	/^void wtimer_reset(struct wput_timer *wt);$/;"	p	signature:(struct wput_timer *wt)

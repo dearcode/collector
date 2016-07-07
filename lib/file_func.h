@@ -99,4 +99,6 @@ int file_move_uniq(char *ofile, char **nfile);
 
 int create_temp_file(char *path, char **nf);
 
+int file_buffer_create(buffer_t ** b, char *path);
+
 #endif

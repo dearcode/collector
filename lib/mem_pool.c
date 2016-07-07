@@ -59,14 +59,13 @@ void *memory_alloc(int64_t size, int line, char *func)
 void *memory_realloc(void *old_data, int64_t size, int line, char *func)
 {
 	void *data;
-
 	block_t *nblk, *oblk;
 
 	if (!old_data) {
 		return memory_alloc(size, line, func);
 	}
 
-	oblk = old_data - sizeof(block_t);
+	oblk = old_data - sizeof(*oblk);
 
 	data = memory_alloc(size, line, func);
 	if (!data) {
@@ -114,16 +113,17 @@ void memory_free(void *data, int line, char *func)
 	M_blst_unlock(blst);
 #endif
 
+	*(char *)data = 0;
+
 	if (blk->stat & MEM_ONCE) {
-		*(char *)data = 0;
 		free(blk);
-	} else {
-		blst = &memory_pool.free_blst[blk->blst_id];
-		M_blst_lock(blst);
-		LIST_INSERT_HEAD(blst, head, blk, node);
-		M_blst_unlock(blst);
-		*(char *)data = 0;
+		return;
 	}
+
+	blst = &memory_pool.free_blst[blk->blst_id];
+	M_blst_lock(blst);
+	LIST_INSERT_HEAD(blst, head, blk, node);
+	M_blst_unlock(blst);
 }
 
 inline int block_alloc(int64_t size, block_t ** blk)

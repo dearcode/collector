@@ -7,7 +7,7 @@ default: cwind_exec
 
 cwind_exec:
 	for SUBDIR in $(SRCDIRS); do \
-			cd $$SUBDIR; make; cd ..; \
+			cd $$SUBDIR; make DEBUG=$(DEBUG); cd ..; \
 			done
 
 

@@ -293,7 +293,7 @@ int html_format(mrt_page_t * page, char *data)
 			*(ps1 + len) = 0;
 		}
 	}
-	str_format(data);
+	str_trim(data);
 	return MRT_SUC;
 }
 

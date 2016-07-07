@@ -246,11 +246,11 @@ continue;
 #define log_debug(fmt, ...) logger_write(MRT_DEBUG, "DEBUG", "%s "fmt, __func__, ##__VA_ARGS__)
 
 #else
-#define log_fatal(fmt, ...) printf(fmt"\n", __VA_ARGS__)
-#define log_error(fmt, ...) printf(fmt"\n", __VA_ARGS__)
-#define log_warning(fmt, ...) printf(fmt"\n", __VA_ARGS__)
-#define log_info(fmt, ...) printf(fmt"\n", __VA_ARGS__)
-#define log_debug(fmt, ...) printf(fmt"\n", __VA_ARGS__)
+#define log_fatal(fmt, ...) printf("%s:%d "fmt"\n", __func__, __LINE__, ##__VA_ARGS__)
+#define log_error(fmt, ...) printf("%s:%d "fmt"\n",  __func__, __LINE__, ##__VA_ARGS__)
+#define log_warning(fmt, ...) printf("%s:%d "fmt"\n", __func__, __LINE__, ##__VA_ARGS__)
+#define log_info(fmt, ...) printf("%s:%d "fmt"\n", __func__, __LINE__, ##__VA_ARGS__)
+#define log_debug(fmt, ...) printf("%s:%d "fmt"\n", __func__, __LINE__, ##__VA_ARGS__)
 #endif
 
 #define M_strdup(src, len) str_newcpy(src, len)

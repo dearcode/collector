@@ -39,7 +39,7 @@ int http_head_find(char *buf, char *key, char *val, uint32_t val_size)
 	strcpy(val, ps1);
 	*ps2 = '\r';
 
-	return str_format(val);
+	return str_trim(val);
 }
 
 int http_url_parse(char *src, char *host, char *page, char *port)

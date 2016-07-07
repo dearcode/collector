@@ -1,4 +1,9 @@
 CC=gcc
+
+ifeq (true,$(DEBUG))
+CFLAGS=-D__DEBUG__
+endif
+
 ifeq (MEM,$(DEBUG))
 CFLAGS=-Wall -g -lcrypto -DMEMORY_DEBUG -rdynamic
 PROGRAMS=libmrt.a
@@ -18,7 +23,7 @@ else ifeq (FILE, $(DEBUG))
 CFLAGS=-Wall -g -lcrypto -DFILE_FUNC_TEST
 PROGRAMS=file_test
 else
-CFLAGS=-Wall -g -rdynamic
+CFLAGS+=-Wall -g -rdynamic -ggdb3
 PROGRAMS=libmrt.a
 endif
 INCL=-I. $(shell mysql_config --include)

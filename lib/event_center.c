@@ -1,6 +1,7 @@
 #include <sys/time.h>
 #include <sys/epoll.h>
 #include <netinet/tcp.h>
+#include <sys/sendfile.h>
 #include "global.h"
 
 //-------------------------
@@ -143,8 +144,7 @@ int connect_accept()
 			log_error("accept error:%m");
 			return MRT_ERR;
 		}
-		snprintf(from, sizeof(from), "%d.%d.%d.%d:%d", sa.sin_addr.s_addr & 0xFF,
-			 (sa.sin_addr.s_addr >> 8) & 0xFF, (sa.sin_addr.s_addr >> 16) & 0xFF,
+		snprintf(from, sizeof(from), "%d.%d.%d.%d:%d", sa.sin_addr.s_addr & 0xFF, (sa.sin_addr.s_addr >> 8) & 0xFF, (sa.sin_addr.s_addr >> 16) & 0xFF,
 			 (sa.sin_addr.s_addr >> 24) & 0xFF, ntohs(sa.sin_port));
 
 		SOCKET_NONBLOCK(nfd);
@@ -198,10 +198,10 @@ int connect_read(conn_t * conn)
 {
 	buffer_t *buf = NULL;
 	char block[BUFSIZ] = { 0 };
-	int rlen = 0, rsize = 0;
+	int rsize = 0;
 
 	while (1) {
-		if ((rlen = recv(conn->fd, block, sizeof(block), 0)) == MRT_ERR) {
+		if ((rsize = recv(conn->fd, block, sizeof(block), 0)) == MRT_ERR) {
 			if (errno == EAGAIN) {
 				conn->event &= ~EVENT_RECV;
 				break;
@@ -214,22 +214,19 @@ int connect_read(conn_t * conn)
 			return MRT_ERR;
 		}
 
-		if (rlen == 0) {
+		if (rsize == 0) {
 			log_info("%x from:%s fd:%d close recv:%d", conn->id, conn->addr_str, conn->fd, conn->recv_size);
 			conn->event = EVENT_OVER;
 			if (rsize > 0)
 				break;
 			return MRT_ERR;
 		}
-		rsize += rlen;
 
-		if (buffer_create(&buf, rlen) == MRT_ERR) {
-			log_error("%x from:%s fd:%d recv size:%d, buffer_create error", conn->id, conn->addr_str,
-				  conn->fd, rlen);
+		if (buffer_create(&buf, rsize) == MRT_ERR) {
+			log_error("%x from:%s fd:%d recv size:%d, buffer_create error", conn->id, conn->addr_str, conn->fd, rsize);
 			return MRT_ERR;
 		}
-
-		buffer_push(buf, block, &rlen);
+		buffer_push(buf, block, &rsize);
 		LIST_INSERT_TAIL(conn, recv_bufs, buf, node);
 		conn->recv_bufs.size += buf->len;
 	}
@@ -243,8 +240,16 @@ int connect_write(conn_t * conn)
 	int ssize = 0, bsize = 0;
 
 	while ((buf = LIST_FIRST(conn, send_bufs))) {
-		while ((bsize = buf->wpos - buf->rpos) > 0) {
-			if ((ssize = write(conn->fd, buf->rpos, bsize)) == MRT_ERR) {
+		while ((bsize = buf->len - buf->pos) > 0) {
+			printf("type:%d, len:%jd, pos:%jd\n", buf->type, buf->len, buf->pos);
+			if (buf->type == BUFFER_FILE) {
+				ssize = sendfile(conn->fd, buf->fd, (off_t *) & buf->pos, bsize);
+			} else {
+				ssize = write(conn->fd, buf->data + buf->pos, bsize);
+			}
+			printf("write over, type:%d, ssize:%jd, size:%d, pos:%jd\n", buf->type, buf->len, ssize, buf->pos);
+
+			if (ssize == MRT_ERR) {
 				if (errno == EINTR)
 					continue;
 				if (errno == EAGAIN) {
@@ -252,11 +257,13 @@ int connect_write(conn_t * conn)
 					break;
 				}
 
-				log_error("%x from:%s fd:%d send error:(%d:%m)", conn->id, conn->addr_str, conn->fd,
-					  errno);
+				log_error("%x from:%s fd:%d send error:(%d:%m)", conn->id, conn->addr_str, conn->fd, errno);
 				return MRT_ERR;
 			}
-			buf->rpos += ssize;
+
+			if (buf->type != BUFFER_FILE)
+				buf->pos += ssize;
+
 			log_debug("%x from:%s fd:%d send data size:%d", conn->id, conn->addr_str, conn->fd, ssize);
 		}
 

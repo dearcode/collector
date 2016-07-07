@@ -1,5 +1,34 @@
 #include "global.h"
 
+int file_buffer_create(buffer_t ** b, char *path)
+{
+	buffer_t *buf = M_alloc(sizeof(*buf));
+	if (!buf) {
+		log_error("create buffer error size:%zd", sizeof(*buf));
+		return MRT_ERR;
+	}
+
+	int fd = open(path, O_RDONLY);
+	if (fd == MRT_ERR) {
+		log_error("open file:%s error:%m", path);
+		return MRT_ERR;
+	}
+
+	buf->type = BUFFER_FILE;
+	buf->data = buf + 1;
+	buf->fd = fd;
+	buf->pos = 0;
+	buf->size = fd_file_size(fd);
+	buf->len = buf->size;
+
+	*b = buf;
+
+	log_debug("open file:%s size:%jd", path, buf->size);
+
+	return MRT_SUC;
+
+}
+
 int file_buffer_init(file_handle_t * file, int size)
 {
 	file->buffer = M_alloc(sizeof(buffer_t));

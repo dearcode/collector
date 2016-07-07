@@ -3,9 +3,7 @@
 
 int buffer_create(buffer_t ** rbuf, int size)
 {
-	buffer_t *buf = NULL;
-
-	buf = M_alloc(sizeof(*buf) + size);
+	buffer_t *buf = M_alloc(sizeof(*buf) + size);
 	if (!buf) {
 		log_error("create buffer error size:%zd", sizeof(*buf) + size);
 		return MRT_ERR;
@@ -14,9 +12,7 @@ int buffer_create(buffer_t ** rbuf, int size)
 	buf->type = BUFFER_CREATE;
 	buf->data = buf + 1;
 	buf->len = 0;
-	buf->rpos = buf->data;
-	buf->wpos = buf->data;
-	buf->str = (char *)buf->data;
+	buf->pos = 0;
 	buf->size = size;
 
 	*rbuf = buf;
@@ -34,9 +30,7 @@ int buffer_init(buffer_t * buf, int size)
 
 	buf->type = BUFFER_INIT;
 	buf->len = 0;
-	buf->rpos = buf->data;
-	buf->wpos = buf->data;
-	buf->str = (char *)buf->data;
+	buf->pos = 0;
 	buf->size = size;
 
 	return MRT_SUC;
@@ -44,22 +38,18 @@ int buffer_init(buffer_t * buf, int size)
 
 //如果buffer的剩余空间大于size就直接添加到尾部
 //否则把data复制到剩余空间中之后修改size为data中剩余大小
-//完成后修改wpos指针,已用缓冲大小
+//完成后修改pos指针,已用缓冲大小
 int buffer_push(buffer_t * buf, void *data, int *size)
 {
 	int len = 0;
-
-	M_cpvril(buf);
-	M_cpvril(data);
 
 	if ((*size + buf->len) > buf->size)
 		len = buf->size - buf->len;
 	else
 		len = *size;
 
-	memcpy(buf->wpos, data, len);
+	memcpy(buf->data + buf->len, data, len);
 
-	buf->wpos += len;
 	buf->len += len;
 	*size -= len;
 
@@ -68,11 +58,10 @@ int buffer_push(buffer_t * buf, void *data, int *size)
 
 int buffer_clear(buffer_t * buf)
 {
-	M_cpvril(buf);
-
-	buf->rpos = buf->wpos = buf->data;
-	memset(buf->data, 0, buf->size);
+	buf->pos = 0;
 	buf->len = 0;
+
+	memset(buf->data, 0, buf->size);
 
 	return MRT_SUC;
 }
@@ -80,8 +69,6 @@ int buffer_clear(buffer_t * buf)
 int buffer_read(int fd, buffer_t * buf)
 {
 	int rlen = 0;
-
-	M_cpvril(buf);
 
 	while (buf->len < buf->size) {
 
@@ -92,7 +79,7 @@ int buffer_read(int fd, buffer_t * buf)
 			if (errno == EINTR)
 				continue;
 
-			log_debug("read info:[%d:%m] recv:%d", errno, buf->len);
+			log_debug("read info:[%d:%m] recv:%jd", errno, buf->len);
 			return MRT_ERR;
 		}
 
@@ -103,7 +90,7 @@ int buffer_read(int fd, buffer_t * buf)
 		buf->len += rlen;
 	}
 
-	log_debug("read fd:%d, size:%d", fd, buf->len);
+	log_debug("read fd:%d, size:%jd", fd, buf->len);
 
 	return buf->len;
 }
@@ -134,44 +121,85 @@ int buffer_write(int fd, buffer_t * buf)
 	return MRT_SUC;
 }
 
-int buffer_printf(buffer_t * buf, const char *fmt, ...)
+int buffer_realloc(buffer_t ** buf, int new_size)
 {
-	va_list ap;
+	buffer_t *oldbuf = *buf;
+	buffer_t *newbuf;
 
-	va_start(ap, fmt);
-	vsnprintf(buf->data, buf->size, fmt, ap);
-	va_end(ap);
-	buf->len = strlen(buf->str);
-
-	return buf->len;
-}
-
-int buffer_cats(buffer_t * buf, const char *fmt, ...)
-{
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(buf->data, buf->size - buf->len, fmt, ap);
-	va_end(ap);
-	buf->len = strlen(buf->str);
-
-	return buf->len;
-}
-
-int buffer_cleanup(buffer_t * buf)
-{
-	M_cpvril(buf);
-
-	if (buf->type == BUFFER_INIT) {
-		M_free(buf->data);
-		buf->len = 0;
-		buf->rpos = NULL;
-		buf->wpos = NULL;
-		buf->str = NULL;
-		buf->size = 0;
-	} else {
-		M_free(buf);
+	if (buffer_create(&newbuf, new_size) == MRT_ERR) {
+		log_error("create new buffer error:%m, size:%d", new_size);
+		return MRT_ERR;
 	}
 
-	return MRT_SUC;
+	newbuf->size = new_size;
+	newbuf->pos = oldbuf->pos;
+	newbuf->len = oldbuf->len;
+
+	memcpy(newbuf->data, oldbuf->data, oldbuf->len);
+
+	*buf = newbuf;
+
+	buffer_cleanup(oldbuf);
+
+	return MRT_OK;
+}
+
+int buffer_printf(buffer_t ** buf, const char *fmt, ...)
+{
+	va_list ap;
+	int size;
+
+	va_start(ap, fmt);
+	size = vsnprintf(NULL, 0, fmt, ap);
+	va_end(ap);
+
+	size++;
+
+	if ((*buf)->size < size) {
+		buffer_realloc(buf, size);
+	}
+
+	va_start(ap, fmt);
+	(*buf)->len = vsnprintf((*buf)->data, size, fmt, ap);
+	va_end(ap);
+
+	return (*buf)->len;
+}
+
+int buffer_cats(buffer_t ** buf, const char *fmt, ...)
+{
+	va_list ap;
+	int size;
+
+	va_start(ap, fmt);
+	size = vsnprintf(NULL, 0, fmt, ap);
+	va_end(ap);
+
+	size++;
+
+	if (((*buf)->size - (*buf)->len) < size) {
+		buffer_realloc(buf, (*buf)->len + size);
+	}
+
+	va_start(ap, fmt);
+	(*buf)->len += vsnprintf((*buf)->data + (*buf)->len, size, fmt, ap);
+	va_end(ap);
+
+	return (*buf)->len;
+}
+
+void buffer_cleanup(buffer_t * buf)
+{
+	switch (buf->type) {
+	case BUFFER_INIT:
+		M_free(buf->data);
+		break;
+	case BUFFER_CREATE:
+		M_free(buf);
+		break;
+	case BUFFER_FILE:
+		close(buf->fd);
+		M_free(buf);
+		break;
+	}
 }

@@ -25,12 +25,11 @@ int ini_file_load(char *file_name, hashmap_t * hmp)
 			continue;
 		}
 
-		if ((sscanf(line_buf, "%[^=]=%s", key, val) == 2) && (!str_format(key) && !str_format(val))) {
+		if ((sscanf(line_buf, "%[^=]=%s", key, val) == 2) && (!str_trim(key) && !str_trim(val))) {
 			p_zero(ckey);
 			sprintf(ckey, "%s|%s", lable, key);
 			M_cvril(hashmap_insert
-				(hmp, str_newcpy(ckey, strlen(ckey)), strlen(ckey), str_newcpy(val, strlen(val))),
-				"insert hash map error, key:%s, val:%s", ckey, val);
+				(hmp, str_newcpy(ckey, strlen(ckey)), strlen(ckey), str_newcpy(val, strlen(val))), "insert hash map error, key:%s, val:%s", ckey, val);
 		}
 
 		p_zero(line_buf);
