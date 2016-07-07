@@ -1,7 +1,6 @@
 #ifndef __MACRO_CONST_H__
 #define __MACRO_CONST_H__
 
-
 //------------ 返回值 ---------------
 #define MRT_OK 0
 #define MRT_SUC 0
@@ -58,7 +57,6 @@
 
 #define CRLF "\r\n"
 
-
 // ----------- 各种最大长度 --------
 
 #define MAX_MEM 9000
@@ -73,7 +71,6 @@
 #define MAX_TITLE SMALL_STR
 #define MAX_DATE 32
 #define MAX_TIME 64
-
 
 #define MAX_HEAD MID_STR
 #define MAX_IP 32
@@ -96,7 +93,5 @@
 
 #define MEM_ALIGN(size, asize) \
     (((size) + (asize) - 1) & ~((unsigned int) (asize) -1))
-
-
 
 #endif

@@ -26,15 +26,10 @@
                       callback_t on_close,      //在关闭连接之前调用
                       */
 int event_center_init(int max_conn, int timeout, char *host, int port,
-                      callback_t on_accept,
-                      callback_t on_request,
-                      callback_t on_response,
-                      callback_t on_close
-                      );
+		      callback_t on_accept, callback_t on_request, callback_t on_response, callback_t on_close);
 
 int event_loop();
 
-void worker_return(task_t *tsk);
-
+void worker_return(task_t * tsk);
 
 #endif

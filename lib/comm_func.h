@@ -15,22 +15,21 @@ void set_error(char *msg, ...);
 
 char *get_error();
 
+char *printip(unsigned char *ip);
 
-char *printip(unsigned char * ip);
-
-char *int64toa(off_t num, char * buf, int con_unit);
+char *int64toa(off_t num, char *buf, int con_unit);
 
 char *get_port_fmt(int ip, unsigned int port);
 
-void clear_path(char * path);
+void clear_path(char *path);
 
-char *get_relative_path(char * src, char * dst);
+char *get_relative_path(char *src, char *dst);
 
-char * unescape(char * str);
+char *unescape(char *str);
 
 char *legible(off_t l);
 
-int numdigit (long number);
+int numdigit(long number);
 
 //char *basename(char * p);
 

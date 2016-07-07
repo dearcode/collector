@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define SOCK_ERROR(x) (x == ERR_RECONNECT || x == ERR_TIMEOUT)
 
 #define FTP_ERROR(x) (x == ERR_RETRY || x == ERR_PERMANENT)
@@ -15,7 +14,6 @@
 //数组清空用p_zero,结构体清空用s_zero
 #define p_zero(obj) memset(obj, 0, sizeof(*obj))
 #define s_zero(obj) memset(&obj, 0, sizeof(obj))
-
 
 #define MEM_ALIGN(size, asize) \
     (((size) + (asize) - 1) & ~((unsigned int) (asize) -1))
@@ -62,7 +60,6 @@ return NULL;
     return NULL; \
 }
 
-
 //检测string返回int记录日志
 #define M_csril(val, msg,  ...) \
     if(!(val)||!*(val)) \
@@ -92,7 +89,6 @@ continue;
     continue; \
 }
 
-
 //检测int为-1则continue不记录日志
 #define M_cicnl(val) \
     if((val) == -1) \
@@ -105,8 +101,6 @@ continue;
     log_info("%s "msg, __func__, ##__VA_ARGS__); \
     continue; \
 }
-
-
 
 //检测void *返回int记录日志
 #define M_cvril(val, msg, ...) \
@@ -130,7 +124,6 @@ continue;
 { \
     return -1; \
 }
-
 
 //检测void *返回void *记录日志
 #define M_cvrvl(val, msg, ...) \
@@ -163,11 +156,7 @@ continue;
     return MRT_ERR; \
 }
 
-
 // ---------------------------------------------
-
-
-
 
 //------------ 检测传入参数用 -----------------
 
@@ -183,8 +172,6 @@ continue;
     if(!(val)||!*(val)) \
     return -1;
 
-
-
 //检测传入参数是否为-1
 #define M_cpiril(val) \
     if((val) == -1) \
@@ -192,7 +179,6 @@ continue;
     log_error("parameter "#val" is -1."); \
     return -1; \
 }
-
 
 //检测传入参数字符串是否为空，记录日志，返回类型为void *
 #define M_cpsrvl(val) \
@@ -210,7 +196,6 @@ continue;
     return NULL; \
 }
 
-
 //检测传入参数是否为空，记录日志，返回类型为void *
 #define M_cpvrvl(val) \
     if(!(val)) \
@@ -227,7 +212,6 @@ continue;
     return -1; \
 }
 
-
 //检测传入参数是否为空，记录日志，返回类型为int
 #define M_cpvril(val) \
     if(!(val)) \
@@ -235,7 +219,6 @@ continue;
     log_error("parameter "#val" is null."); \
     return -1; \
 }
-
 
 //检测文件存在
 #define M_file_exist(file) access(file, F_OK)
@@ -249,9 +232,7 @@ continue;
 //检测文件执行权限
 #define M_file_exec(file) access(file, X_OK)
 
-
 #define BASE64_ENCODE_LEN(x) ((size_t) (((((x) + 2) / 57) * 77) + 77))
-
 
 #define M_alloc(val) memory_alloc(val, __LINE__, (char *)__func__)
 #define M_realloc(val, size) memory_realloc(val, size, __LINE__, (char *)__func__)
@@ -272,9 +253,6 @@ continue;
 #define log_debug(fmt, ...) printf(fmt"\n", __VA_ARGS__)
 #endif
 
-
-
 #define M_strdup(src, len) str_newcpy(src, len)
 
 #endif
-

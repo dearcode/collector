@@ -1,31 +1,26 @@
 #ifndef __STRING_FUNC_H__
 #define __STRING_FUNC_H__
 
+typedef struct S_charset {
+	char from[MAX_ID];
+	char to[MAX_ID];
+	iconv_t ct;
 
-typedef struct S_charset
-{
-    char            from[MAX_ID];
-    char            to[MAX_ID];
-    iconv_t         ct;
+} T_charset;
 
-}T_charset;
+typedef struct T_array {
+	//stat标志当前数组是否可用
+	uint8_t stat:1;
+	//data为真实的数组
+	void *data;
+	//idx指向数组中任意位置的指针
+	void *idx;
+	//len是当前所用的长度
+	uint16_t len;
+	//size为分配的内存大小
+	uint16_t size;
 
-
-typedef struct T_array
-{
-    //stat标志当前数组是否可用
-    uint8_t         stat:1;
-    //data为真实的数组
-    void            *data;
-    //idx指向数组中任意位置的指针
-    void            *idx;
-    //len是当前所用的长度
-    uint16_t        len;
-    //size为分配的内存大小
-    uint16_t        size;
-
-}T_array;
-
+} T_array;
 
 // ----------- 函数声明 ----------------
 
@@ -65,7 +60,7 @@ int move_cut_gets(char **src, char *start, char *end, char **dest);
 
 int charset_convert(char *f_set, char *t_set, char *f_str, size_t f_len, char *t_str, size_t t_len);
 
-int charset_convert_string(char *from_set, char *to_set, string_t *from_str, string_t *to_str);
+int charset_convert_string(char *from_set, char *to_set, string_t * from_str, string_t * to_str);
 
 time_t str_to_time(char *src);
 

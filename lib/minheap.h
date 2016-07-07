@@ -4,7 +4,7 @@
 #include <time.h>
 
 typedef struct {
-    int id;
+	int id;
 	int min_heap_idx;
 	time_t timeout;
 	void *data;
@@ -52,8 +52,8 @@ void min_heap_dtor(min_heap_t * s)
 void min_heap_elem_init(timer_event_t * e, int timeout, void *dat)
 {
 	e->min_heap_idx = -1;
-    e->timeout = timeout;
-    e->data = dat;
+	e->timeout = timeout;
+	e->data = dat;
 }
 
 int min_heap_empty(min_heap_t * s)
@@ -73,7 +73,7 @@ timer_event_t *min_heap_top(min_heap_t * s)
 
 int min_heap_push(min_heap_t * s, timer_event_t * e)
 {
-    e->min_heap_idx = -1;
+	e->min_heap_idx = -1;
 	if (min_heap_reserve(s, s->num + 1))
 		return -1;
 	min_heap_shift_up_(s, s->num++, e);

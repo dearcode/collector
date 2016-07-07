@@ -1,7 +1,6 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
 
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -50,6 +49,5 @@ typedef struct memory_pool_s memory_pool_t;
 #include "factory.h"
 #include "minheap.h"
 #include "event_center.h"
-
 
 #endif

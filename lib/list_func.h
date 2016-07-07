@@ -3,16 +3,16 @@
 
 typedef struct list_node list_node_t;
 struct list_node {
-    list_node_t *prev;
-    list_node_t *next;
-    void *dat;
+	list_node_t *prev;
+	list_node_t *next;
+	void *dat;
 };
 
 typedef struct list_head list_head_t;
-struct list_head{
-    list_node_t *first;
-    list_node_t *last;
-    uint32_t size;
+struct list_head {
+	list_node_t *first;
+	list_node_t *last;
+	uint32_t size;
 };
 
 #define	LIST_INIT(list, head) \
@@ -24,7 +24,6 @@ struct list_head{
     (elm)->node.prev = NULL; \
     (elm)->node.next = NULL; \
     (elm)->node.dat = (elm);
-
 
 #define	LIST_INSERT_HEAD(list, head, elm, node) 			\
     LIST_NODE_INIT(elm, node); \
@@ -94,4 +93,3 @@ struct list_head{
 #define	LIST_SIZE(list, head)		((list)->head.size)
 
 #endif
-
