@@ -1,0 +1,59 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CC	Makefile	/^CC=gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS=-Wall -g $/;"	m
+CFLAGS	Makefile	/^CFLAGS=-Wall -g -lcrypto -DHTML_TEST$/;"	m
+HEAD_STR_CAT	http_func.c	106;"	d	file:
+INCL	Makefile	/^INCL=-I..\/lib\/ $/;"	m
+LDFLAGS	Makefile	/^LDFLAGS=-lpthread -ldl -lm -lrt -lmrt -pg$/;"	m
+LIB	Makefile	/^LIB= -L..\/lib$/;"	m
+OBJS	Makefile	/^OBJS=$(SRCS:.c=.o)$/;"	m
+PROGRAMS	Makefile	/^PROGRAMS=html_test$/;"	m
+PROGRAMS	Makefile	/^PROGRAMS=libhtml.a$/;"	m
+SRCDIRS	Makefile	/^SRCDIRS=.$/;"	m
+SRCS	Makefile	/^SRCS= html_func.c http_func.c$/;"	m
+__get_chunk_length	http_func.c	/^int __get_chunk_length(char **src, int *len)$/;"	f	signature:(char **src, int *len)
+__get_http_page	http_func.c	/^int __get_http_page(char *url, char *referer, string_t * data)$/;"	f	signature:(char *url, char *referer, string_t * data)
+__temp_file_close	http_func.c	/^int __temp_file_close(char *url, string_t * new_path)$/;"	f	signature:(char *url, string_t * new_path)
+__temp_file_handle	http_func.c	/^static file_handle_t __temp_file_handle;$/;"	v	file:
+__temp_file_md5	http_func.c	/^static MD5_CTX __temp_file_md5;$/;"	v	file:
+__temp_file_open	http_func.c	/^int __temp_file_open()$/;"	f
+__temp_file_write	http_func.c	/^int __temp_file_write(char *dat, int len)$/;"	f	signature:(char *dat, int len)
+cookie	http_func.c	/^char cookie[4096] = { 0 };$/;"	v
+fix_charset_newcpy	html_func.c	/^int fix_charset_newcpy(char *, char **content);$/;"	p	file:	signature:(char *, char **content)
+fix_charset_newcpy	html_func.c	/^int fix_charset_newcpy(char *src_charset, char **content)$/;"	f	signature:(char *src_charset, char **content)
+fix_charset_newcpy	http_func.c	/^int fix_charset_newcpy(char *, char **content);$/;"	p	file:	signature:(char *, char **content)
+html_fetch_base	html_func.c	/^int html_fetch_base(string_t * src, html_page_t * page)$/;"	f	signature:(string_t * src, html_page_t * page)
+html_fetch_charset	html_func.c	/^int html_fetch_charset(string_t * src, html_page_t * page)$/;"	f	signature:(string_t * src, html_page_t * page)
+html_fetch_href	html_func.c	/^int html_fetch_href(string_t * src, string_t * url, string_t * caption)$/;"	f	signature:(string_t * src, string_t * url, string_t * caption)
+html_fetch_href_ex	html_func.c	/^int html_fetch_href_ex(char *src, char **url, char **caption)$/;"	f	signature:(char *src, char **url, char **caption)
+html_fetch_img	html_func.c	/^int html_fetch_img(char *src, char *url, int url_size)$/;"	f	signature:(char *src, char *url, int url_size)
+html_fetch_img_ex	html_func.c	/^int html_fetch_img_ex(char *src, char **dest)$/;"	f	signature:(char *src, char **dest)
+html_fix_caption	html_func.c	/^int html_fix_caption(html_page_t * page, string_t * caption)$/;"	f	signature:(html_page_t * page, string_t * caption)
+html_fix_charset	html_func.c	/^int html_fix_charset(html_page_t * page, char *charset)$/;"	f	signature:(html_page_t * page, char *charset)
+html_fix_url	html_func.c	/^int html_fix_url(html_page_t * page, string_t * url)$/;"	f	signature:(html_page_t * page, string_t * url)
+html_fix_url_ex	html_func.c	/^int html_fix_url_ex(mrt_page_t * page, char **url)$/;"	f	signature:(mrt_page_t * page, char **url)
+html_format	html_func.c	/^int html_format(mrt_page_t * page, char *data)$/;"	f	signature:(mrt_page_t * page, char *data)
+html_head_parse	html_func.c	/^int html_head_parse(html_page_t * page)$/;"	f	signature:(html_page_t * page)
+html_mark_filter	html_func.c	/^int html_mark_filter(mrt_filter_t * filter, string_t * src)$/;"	f	signature:(mrt_filter_t * filter, string_t * src)
+html_move_fetch_href	html_func.c	/^int html_move_fetch_href(string_t * src, string_t * url, string_t * caption)$/;"	f	signature:(string_t * src, string_t * url, string_t * caption)
+html_part_fetch_href	html_func.c	/^int html_part_fetch_href(string_t * src, char *part_start, char *part_end, string_t * url, string_t * caption)$/;"	f	signature:(string_t * src, char *part_start, char *part_end, string_t * url, string_t * caption)
+html_string_format	html_func.c	/^int html_string_format(string_t * src)$/;"	f	signature:(string_t * src)
+http_check_prefix	http_func.c	/^int http_check_prefix(char *src)$/;"	f	signature:(char *src)
+http_connect	http_func.c	/^int http_connect(char *url, char *referer)$/;"	f	signature:(char *url, char *referer)
+http_connect_follow	http_func.c	/^int http_connect_follow(char *url, char *referer)$/;"	f	signature:(char *url, char *referer)
+http_free_page	http_func.c	/^void http_free_page(html_page_t * page)$/;"	f	signature:(html_page_t * page)
+http_get_parameter	http_func.c	/^int http_get_parameter(char *src, char *key, char *val)$/;"	f	signature:(char *src, char *key, char *val)
+http_head_find	http_func.c	/^int http_head_find(char *buf, char *key, char *val, uint32_t val_size)$/;"	f	signature:(char *buf, char *key, char *val, uint32_t val_size)
+http_make_head	http_func.c	/^int http_make_head(char *host, char *page, char *port, char *referer, string_t * dest)$/;"	f	signature:(char *host, char *page, char *port, char *referer, string_t * dest)
+http_recv_file	http_func.c	/^int http_recv_file(char *url, char *referer, string_t * new_path)$/;"	f	signature:(char *url, char *referer, string_t * new_path)
+http_recv_html	http_func.c	/^int http_recv_html(char *url, char *fname)$/;"	f	signature:(char *url, char *fname)
+http_recv_page	http_func.c	/^int http_recv_page(char *url, html_page_t * page, int parse)$/;"	f	signature:(char *url, html_page_t * page, int parse)
+http_url_parse	http_func.c	/^int http_url_parse(char *src, char *host, char *page, char *port)$/;"	f	signature:(char *src, char *host, char *page, char *port)
+main	main.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
+timeout	http_func.c	/^int timeout = 5;$/;"	v
+uri_chinese_encode	http_func.c	/^int uri_chinese_encode(char *link, int llen, string_t * dest)$/;"	f	signature:(char *link, int llen, string_t * dest)

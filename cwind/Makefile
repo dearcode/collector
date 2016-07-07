@@ -7,7 +7,7 @@ ifeq (FETCH,$(DEBUG))
 LDFLAGS+=-DFETCH_TEST
 endif
 DEPENDFLAG=-MM
-INCLUDES=-I. -I/usr/include/mysql/ -I../include/ -I/usr/local/mysql/include
+INCLUDES=-I. -I../lib/ $(shell mysql_config --include)
 
 CFLAGS:=$(CFLAGS) $(INCLUDES)
 LDFLAGS:=$(LDFLAGS) 
@@ -17,7 +17,6 @@ SRCDIRS=.
 PROGRAMS=cwind
 
 
-#SRCS=$(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))
 SRCS=comfunc.c  cwind_db.c  fetch_web.c  server.c
 
 OBJS=$(SRCS:.c=.o)

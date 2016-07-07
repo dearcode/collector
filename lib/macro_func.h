@@ -253,15 +253,9 @@ continue;
 #define BASE64_ENCODE_LEN(x) ((size_t) (((((x) + 2) / 57) * 77) + 77))
 
 
-#ifdef USE_MEM_POOL
 #define M_alloc(val) memory_alloc(val, __LINE__, (char *)__func__)
 #define M_realloc(val, size) memory_realloc(val, size, __LINE__, (char *)__func__)
 #define M_free(val) memory_free(val,  __LINE__, (char *)__func__)
-#else
-#define M_alloc(val) calloc(1, val)
-#define M_realloc(val, size) realloc(val, size)
-#define M_free(val) free(val)
-#endif
 
 #ifndef __DEBUG__
 #define log_fatal(fmt, ...) logger_write(MRT_FATAL, "FATAL", "%s "fmt, __func__, ##__VA_ARGS__)

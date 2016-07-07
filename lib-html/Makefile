@@ -6,7 +6,7 @@ else
 CFLAGS=-Wall -g 
 PROGRAMS=libhtml.a
 endif
-INCL=-I../include/ -I/usr/include/mysql/ -I/usr/local/mysql/include
+INCL=-I../lib/ 
 LIB= -L../lib
 
 LDFLAGS=-lpthread -ldl -lm -lrt -lmrt -pg

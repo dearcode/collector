@@ -1,20 +1,19 @@
 #ifndef	_SYS_QUEUE_H_
 #define	_SYS_QUEUE_H_
 
-
 /*
  * Tail queue definitions.
  */
 #define	TAILQ_HEAD(type)					\
 	type *_first;		/* first element */		\
-	type **_last;	/* addr of last next element */
+	type **_last;		/* addr of last next element */
 
 #define	TAILQ_HEAD_INITIALIZER(head) \
 	{ NULL, &(head)._first }
 
 #define	TAILQ_ENTRY(type)					\
 	type *_next;		/* next element */		\
-	type **_prev;	/* address of previous next element */
+	type **_prev;		/* address of previous next element */
 
 /*
  * Tail queue functions.
@@ -51,11 +50,9 @@
 	*(listelm)->_prev = (elm);				\
 	(listelm)->_prev = &(elm)->_next;
 
-
 #define TAILQ_REMOVE_HEAD(head) \
     if (((head)->_first = (head)->_first->_next) == NULL) \
 (head)->_last = &(head)->_first;
-
 
 #define	TAILQ_REMOVE(head, elm) 				\
 	if (((elm)->_next) != NULL)				\
@@ -87,6 +84,4 @@
 #define	TAILQ_PREV(elm, headname) \
 	(*(((struct headname *)((elm)->_prev))->_last))
 
-
 #endif
-

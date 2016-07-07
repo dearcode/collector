@@ -21,17 +21,17 @@ else
 CFLAGS=-Wall -g -rdynamic
 PROGRAMS=libmrt.a
 endif
-INCL=-I../include/ -I/usr/include/ -I/usr/local/mysql/include
+INCL=-I. $(shell mysql_config --include)
 LIB= 
 
 LDFLAGS=-lpthread -ldl -lm -lrt -rdynamic
 
 SRCDIRS=.
 
-SRCS= mem_pool.c socket_func.c string.c strutil.c charset.c minheap.c \
+SRCS= mem_pool.c socket_func.c string.c strutil.c charset.c \
 	  comm_func.c file_func.c hashmap.c hashdb.c binmap.c ini_func.c logger.c \
 	  base64.c xxtea.c mysql_func.c factory.c event_center.c \
-	  process_center.c buffer.c file_buffer.c
+	  buffer.c file_buffer.c
 
 OBJS=$(SRCS:.c=.o)
 
