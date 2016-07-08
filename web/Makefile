@@ -19,7 +19,7 @@ SRCDIRS=.
 PROGRAMS=account_center
 
 #SRCS=$(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))
-SRCS=command.c  config.c  process.c  server.c  user_cache.c  user_option.c
+SRCS=config.c  process.c  server.c
 
 OBJS=$(SRCS:.c=.o)
 

@@ -241,20 +241,18 @@ int connect_write(conn_t * conn)
 
 	while ((buf = LIST_FIRST(conn, send_bufs))) {
 		while ((bsize = buf->len - buf->pos) > 0) {
-			printf("type:%d, len:%jd, pos:%jd\n", buf->type, buf->len, buf->pos);
 			if (buf->type == BUFFER_FILE) {
 				ssize = sendfile(conn->fd, buf->fd, (off_t *) & buf->pos, bsize);
 			} else {
 				ssize = write(conn->fd, buf->data + buf->pos, bsize);
 			}
-			printf("write over, type:%d, ssize:%jd, size:%d, pos:%jd\n", buf->type, buf->len, ssize, buf->pos);
 
 			if (ssize == MRT_ERR) {
 				if (errno == EINTR)
 					continue;
 				if (errno == EAGAIN) {
 					conn->event &= ~EVENT_SEND;
-					break;
+					return MRT_SUC;
 				}
 
 				log_error("%x from:%s fd:%d send error:(%d:%m)", conn->id, conn->addr_str, conn->fd, errno);
