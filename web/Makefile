@@ -16,7 +16,7 @@ endif
 
 
 SRCDIRS=.
-PROGRAMS=account_center
+PROGRAMS=web
 
 #SRCS=$(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))
 SRCS=config.c  process.c  server.c
