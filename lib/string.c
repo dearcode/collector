@@ -3,11 +3,11 @@
 #include <openssl/aes.h>
 #include <stdarg.h>
 
-
 string_t *string_create(int32_t size)
 {
 	string_t *sret = NULL;
 	M_cvrvl((sret = M_alloc(sizeof(string_t))), "alloc string error.");
+	memset(sret, 0, sizeof(string_t));
 	M_cvrvl((sret->idx = sret->str = M_alloc(size)), "alloc string buffer error.");
 	sret->size = size;
 	return sret;

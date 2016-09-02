@@ -59,11 +59,9 @@ void hashmap_link(hashmap_t * map, hashmap_entry_t * elm)
 /* hashmap_entry_init - allocate and initialize hash map */
 static int hashmap_entry_init(hashmap_t * map, unsigned size)
 {
-	hashmap_entry_t **h;
-
-	map->data = h = (hashmap_entry_t **) M_alloc(size * sizeof(hashmap_entry_t *));
-
-	M_cvril(h, "malloc map entry, size:%zu", size * sizeof(hashmap_entry_t *));
+	map->data = (hashmap_entry_t **) M_alloc(size * sizeof(hashmap_entry_t *));
+	memset(map->data, 0, size * sizeof(hashmap_entry_t *));
+	M_cvril(map->data, "malloc map entry, size:%zu", size * sizeof(hashmap_entry_t *));
 
 	map->size = size;
 	map->max = (int)(size * 0.72);

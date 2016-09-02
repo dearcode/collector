@@ -155,7 +155,7 @@ char *str_newcpy(char *src, size_t len)
 		worker_set_error("M_alloc error.");
 		return NULL;
 	}
-	strncpy(ret, src, len);
+	snprintf(ret, len+1, src);
 	return ret;
 }
 

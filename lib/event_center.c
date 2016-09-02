@@ -30,6 +30,7 @@ static uint16_t id_inc = 0;
 static conn_t *conn_create(int fd, addr_t addr, char *from)
 {
 	conn_t *c = M_alloc(sizeof(conn_t));
+	memset(c, 0, sizeof(conn_t));
 	c->id = (uint32_t) ((time(NULL) << 16) + id_inc++);
 	c->fd = fd;
 	c->addr = addr;

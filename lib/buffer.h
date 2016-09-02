@@ -44,4 +44,6 @@ int buffer_printf(buffer_t ** buf, const char *fmt, ...);
 //从上次写入的尾部开始写入内容
 int buffer_cats(buffer_t ** buf, const char *fmt, ...);
 
+buffer_t *buffer_sprintf(const char *fmt, ...);
+
 #endif

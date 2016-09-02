@@ -166,6 +166,25 @@ int buffer_printf(buffer_t ** buf, const char *fmt, ...)
 	return (*buf)->len;
 }
 
+buffer_t *buffer_sprintf(const char *fmt, ...)
+{
+	va_list ap;
+	int size;
+	buffer_t *buf;
+
+	va_start(ap, fmt);
+	size = vsnprintf(NULL, 0, fmt, ap);
+	va_end(ap);
+
+	M_cirvl(buffer_create(&buf, size), "buffer_create %d error", size);
+
+	va_start(ap, fmt);
+	buf->len = vsnprintf(buf->data, size, fmt, ap);
+	va_end(ap);
+
+	return buf;
+}
+
 int buffer_cats(buffer_t ** buf, const char *fmt, ...)
 {
 	va_list ap;
