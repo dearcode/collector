@@ -2,8 +2,8 @@
 #include "macro_const.h"
 #include "macro_func.h"
 #include "comm_func.h"
-#include <syslog.h>
 #include <stdarg.h>
+#include <syslog.h>
 #include <execinfo.h>
 
 extern char *error_msg;
@@ -20,53 +20,15 @@ S_level log_level_ary[] = {
 
 static int logger_start = 0;
 
-static int send_error(const char *fmt, ...)
-{
-	char err_buf[MID_STR] = { 0 };
-	va_list ap;
-
-	va_start(ap, fmt);
-	(void)vsnprintf(err_buf, sizeof(err_buf), fmt, ap);
-	va_end(ap);
-
-	snprintf(err_buf + strlen(err_buf), sizeof(err_buf) - strlen(err_buf), "\n");
-
-	syslog(LOG_ERR, "%s", err_buf);
-
-	return MRT_OK;
-}
-
 static inline int level_check(int err_code)
 {
 	return (err_code < logger.level) ? MRT_ERR : MRT_OK;
 }
 
-/*
-static char *level_to_emsg(uint8_t level)
-{
-    return (level < 1 || level > 5) ? NULL : log_level_ary[level - 1].desc;
-}
-*/
-
-/*
-static int lmsg_to_level(char *msg)
-{
-    int i=0;
-
-    for(; i< 5; i++)
-        if(strcasecmp(log_level_ary[i].desc, msg) == 0)
-            return log_level_ary[i].level;
-
-    send_error("no found log level:%s.", msg);
-
-    return MRT_ERR;
-}
-*/
-
 static int path_check(char *path)
 {
 	if (access(path, W_OK) == MRT_ERR) {
-		send_error("%s path:%s can't write, %m.", __func__, path);
+		set_error("%s path:%s can't write, %m.", __func__, path);
 		return MRT_ERR;
 	}
 
@@ -99,7 +61,7 @@ int open_log()
 		old_umask = umask(0111);
 
 		if ((logfd = open(nstr, O_WRONLY | O_APPEND | O_CREAT, 0666)) == MRT_ERR) {
-			send_error("%s open file:[%s] error, %m.", __func__, nstr);
+			set_error("%s open file:[%s] error, %m.", __func__, nstr);
 			umask(old_umask);
 			return MRT_ERR;
 		}
@@ -118,7 +80,7 @@ int logger_init(char *path, char *prefix, int level)
 //    char hostname[MAX_USER] = {0};
 
 	if (!path || !*path || !prefix || !*prefix) {
-		send_error("%s parameter error.\n", __func__);
+		set_error("%s parameter error.\n", __func__);
 		return MRT_ERR;
 	}
 
@@ -130,7 +92,7 @@ int logger_init(char *path, char *prefix, int level)
 	/*
 	   if(gethostname(hostname, sizeof(hostname) - 1) == MRT_ERR)
 	   {
-	   send_error("%s get host name error, %m.\n", __func__);
+	   set_error("%s get host name error, %m.\n", __func__);
 	   return MRT_ERR;
 	   }
 
@@ -141,7 +103,7 @@ int logger_init(char *path, char *prefix, int level)
 	snprintf(logger.prefix, sizeof(logger.prefix), "%s", prefix);
 
 	if ((open_log() == MRT_ERR)) {
-		send_error("%s open logfile error.\n", __func__);
+		set_error("%s open logfile error.\n", __func__);
 		return MRT_ERR;
 	}
 
@@ -150,52 +112,57 @@ int logger_init(char *path, char *prefix, int level)
 	return MRT_OK;
 }
 
-void line_format(char *src)
-{
-	char *ps = src;
-
-	while (*ps) {
-		if (*ps == 10 || *ps == 13)
-			*ps = '.';
-		ps++;
-	}
-
-}
 
 int logger_write(int type, char *level, const char *fmt, ...)
 {
-	va_list ap;
-	char tbuf[MAX_LINE * 4] = { 0 };
-	char *pbuf = tbuf;
-	time_t now;
-	uint16_t len = 0;
-	struct tm ctime;
+	static int body_size = 0;
+	static char *body = NULL;
 
-	M_cirinl(level_check(type));
+	va_list ap;
+	int h = 0, b = 0;
+	time_t now;
+	struct tm t;
+
+#define POSTFIX 2
 
 	time(&now);
-	s_zero(ctime);
-	localtime_r(&now, &ctime);
+	localtime_r(&now, &t);
 
-	snprintf(tbuf, sizeof(tbuf), "%.2d:%.2d:%.2d [%u] [%s] ",
-		 ctime.tm_hour, ctime.tm_min, ctime.tm_sec, getpid(), level);
+	do {
+		if (b > body_size - POSTFIX) {
+			if (!(body = realloc(body, b + POSTFIX))) {
+				set_error("realloc buffer size:%d, error:%m", b + 1);
+				return MRT_ERR;
+			}
+			body_size = b + POSTFIX;
+		}
 
-	pbuf = tbuf + strlen(tbuf);
-	va_start(ap, fmt);
-	(void)vsnprintf(pbuf, sizeof(tbuf), fmt, ap);
-	va_end(ap);
+		h = snprintf(body, body_size, "%.2d:%.2d:%.2d [%u] [%s] ", t.tm_hour, t.tm_min, t.tm_sec, getpid(), level);
+		if (h >= body_size) {
+			b = h;
+			continue;
+		}
 
-	len = strlen(tbuf);
-	tbuf[len] = '\n';
+		va_start(ap, fmt);
+		b = vsnprintf(body + h, body_size - h, fmt, ap);
+		va_end(ap);
+
+		b += h;
+
+	} while (b > body_size - POSTFIX);
+
+	body[body_size - POSTFIX] = '\n';
+	body[body_size - 1] = 0;
 
 	if (!logger_start) {
-		printf("%s\n", tbuf);
+		printf("%s", body);
 		return MRT_SUC;
 	}
 
 	if (open_log() == MRT_OK) {
-		if (write(logger.nfd, tbuf, len + 1) < 0) {
-			send_error("Write log file error, file:%s, %m.", logger.prefix);
+		if (write(logger.nfd, body, body_size) < 0) {
+			set_error("Write log file error, file:%s, %m.", logger.prefix);
+			return MRT_ERR;
 		}
 	}
 
@@ -219,3 +186,4 @@ void log_backtrace()
 
 	backtrace_symbols_fd(array, size, logger.nfd);
 }
+

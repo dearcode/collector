@@ -75,9 +75,10 @@ int main(int argc, char *argv[])
 	}
 
 	if (logger_init("./var/log/", "cwind", 1) == MRT_ERR) {
-		printf("%s init logger error.\n", __func__);
+		printf("%s init logger error:%s.\n", __func__, get_error());
 		return MRT_ERR;
 	}
+
 
 	if (memory_pool_init() == MRT_ERR) {
 		printf("%s:%d mem pool init error.\n", __func__, __LINE__);
