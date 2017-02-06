@@ -5,11 +5,9 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 CC	Makefile	/^CC=gcc$/;"	m
-CFLAGS	Makefile	/^CFLAGS:=$(CFLAGS) $(INCLUDES)$/;"	m
-CFLAGS	Makefile	/^CFLAGS=-Wall -g$/;"	m
+CFLAGS	Makefile	/^CFLAGS:= -Wall -g $(INCLUDES)$/;"	m
 CONFILE	cwind.h	12;"	d
 DEFAULT_HOME	cwind.h	14;"	d
-DEPENDFLAG	Makefile	/^DEPENDFLAG=-MM$/;"	m
 HOME_ENV	cwind.h	13;"	d
 INCLUDES	Makefile	/^INCLUDES=-I. -I..\/lib\/ $(shell mysql_config --include)$/;"	m
 JSP_class_url	distribute_web.c	21;"	d	file:
@@ -18,16 +16,13 @@ JSP_hot_url	distribute_web.c	24;"	d	file:
 JSP_index_url	distribute_web.c	26;"	d	file:
 JSP_new_url	distribute_web.c	23;"	d	file:
 JSP_score_url	distribute_web.c	25;"	d	file:
-LD	Makefile	/^LD=gcc$/;"	m
-LDFLAGS	Makefile	/^LDFLAGS:=$(LDFLAGS) $/;"	m
-LDFLAGS	Makefile	/^LDFLAGS= $(LIBS) -lmysqlclient  -lmrt -lhtml -lmrt -rdynamic -liconv -lpthread -lcrypto$/;"	m
-LIBS	Makefile	/^LIBS=-L\/usr\/lib\/mysql\/ -L..\/lib\/ -L..\/lib-html\/  -L\/usr\/local\/mysql\/lib -L\/usr\/lib64\/mysql$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS= $(shell mysql_config --libs) -rdynamic -liconv $(LIBS)$/;"	m
+LIBS	Makefile	/^LIBS=..\/lib-html\/libhtml.a ..\/lib\/libmrt.a $/;"	m
 MAX_CONTENT	cwind.h	9;"	d
 MAX_SQL	cwind.h	10;"	d
 OBJS	Makefile	/^OBJS=$(SRCS:.c=.o)$/;"	m
-PROGRAMS	Makefile	/^PROGRAMS=cwind$/;"	m
 SRCDIRS	Makefile	/^SRCDIRS=.$/;"	m
-SRCS	Makefile	/^SRCS=comfunc.c  cwind_db.c  fetch_web.c  server.c$/;"	m
+SRCS	Makefile	/^SRCS=comfunc.c  db.c  fetch_web.c  server.c$/;"	m
 TAILQ_EMPTY	queue.h	78;"	d
 TAILQ_ENTRY	queue.h	14;"	d
 TAILQ_FIRST	queue.h	79;"	d
@@ -127,7 +122,7 @@ content_end	cwind.h	/^	char content_end[SMALL_STR];$/;"	m	struct:__anon3	access:
 content_free	event.h	/^void content_free(cw_content_t * content);$/;"	p	signature:(cw_content_t * content)
 content_free	fetch_web.c	/^void content_free(cw_content_t * content)$/;"	f	signature:(cw_content_t * content)
 content_id	cwind.h	/^	int content_id;$/;"	m	struct:cw_site_s	access:public
-content_info_save	cwind_db.c	/^int content_info_save(cw_site_t * site, cw_content_t * ct)$/;"	f	signature:(cw_site_t * site, cw_content_t * ct)
+content_info_save	db.c	/^int content_info_save(cw_site_t * site, cw_content_t * ct)$/;"	f	signature:(cw_site_t * site, cw_content_t * ct)
 content_info_save	event.h	/^int content_info_save(cw_site_t * site, cw_content_t * ct);$/;"	p	signature:(cw_site_t * site, cw_content_t * ct)
 content_list	cwind.h	/^	cw_content_list_t *content_list;$/;"	m	struct:cw_site_s	access:public
 content_tag	cwind.h	/^	cw_content_tag_t *content_tag;$/;"	m	struct:cw_site_s	access:public
@@ -191,7 +186,7 @@ daemon	cwind.h	/^	int daemon;$/;"	m	struct:__anon7	access:public
 date	cwind.h	/^	uint16_t date;$/;"	m	struct:cw_content_s	access:public
 date_begin	cwind.h	/^	char date_begin[SMALL_STR];$/;"	m	struct:__anon3	access:public
 date_end	cwind.h	/^	char date_end[SMALL_STR];$/;"	m	struct:__anon3	access:public
-dba	cwind_db.c	/^int dba = 0;$/;"	v
+dba	db.c	/^int dba = 0;$/;"	v
 desc	cwind.h	/^	string_t desc;$/;"	m	struct:cw_content_s	access:public
 desc_begin	cwind.h	/^	char desc_begin[SMALL_STR];$/;"	m	struct:__anon3	access:public
 desc_end	cwind.h	/^	char desc_end[SMALL_STR];$/;"	m	struct:__anon3	access:public
@@ -214,8 +209,8 @@ fetch_img_ex	event.h	/^int fetch_img_ex(char *src, char **dest);$/;"	p	signature
 fetch_next_page	fetch_web.c	/^int fetch_next_page(cw_site_t * site, html_page_t * page, string_t * url)$/;"	f	signature:(cw_site_t * site, html_page_t * page, string_t * url)
 fetch_swf_url	fetch_web.c	/^int fetch_swf_url(cw_content_t * content);$/;"	p	file:	signature:(cw_content_t * content)
 filter	cwind.h	/^	mrt_filter_t *filter;$/;"	m	struct:cw_site_s	access:public
-find_class_id	cwind_db.c	/^int find_class_id(cw_site_t * site, char *desc, int *first, int *second)$/;"	f	signature:(cw_site_t * site, char *desc, int *first, int *second)
-find_url_status	cwind_db.c	/^int find_url_status(cw_site_t * site, char *url, int type)$/;"	f	signature:(cw_site_t * site, char *url, int type)
+find_class_id	db.c	/^int find_class_id(cw_site_t * site, char *desc, int *first, int *second)$/;"	f	signature:(cw_site_t * site, char *desc, int *first, int *second)
+find_url_status	db.c	/^int find_url_status(cw_site_t * site, char *url, int type)$/;"	f	signature:(cw_site_t * site, char *url, int type)
 find_url_status	event.h	/^int find_url_status(cw_site_t * site, char *url, int type);$/;"	p	signature:(cw_site_t * site, char *url, int type)
 first_class	cwind.h	/^	string_t first_class;$/;"	m	struct:cw_class_s	access:public
 first_class	cwind.h	/^	string_t first_class;$/;"	m	struct:cw_content_s	access:public
@@ -256,21 +251,20 @@ load_class_info	comfunc.h	/^int load_class_info(mydb_t *, cw_site_t * site);$/;"
 load_config	comfunc.c	/^int load_config()$/;"	f
 load_config	event.h	/^int load_config();$/;"	p	signature:()
 load_content_tag	comfunc.h	/^int load_content_tag(mydb_t *, cw_site_t * site);$/;"	p	signature:(mydb_t *, cw_site_t * site)
-load_content_tag	cwind_db.c	/^int load_content_tag(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
+load_content_tag	db.c	/^int load_content_tag(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
 load_file	comfunc.h	/^int load_file(const char *filename, char **buf);$/;"	p	signature:(const char *filename, char **buf)
 load_filter	comfunc.h	/^int load_filter(mydb_t *, cw_site_t * site);$/;"	p	signature:(mydb_t *, cw_site_t * site)
-load_filter	cwind_db.c	/^int load_filter(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
+load_filter	db.c	/^int load_filter(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
 load_list_tag	comfunc.h	/^int load_list_tag(mydb_t *, cw_site_t * site);$/;"	p	signature:(mydb_t *, cw_site_t * site)
-load_list_tag	cwind_db.c	/^int load_list_tag(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
+load_list_tag	db.c	/^int load_list_tag(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
 load_profile	comfunc.c	/^int load_profile(char *file)$/;"	f	signature:(char *file)
 load_remote_mysql_info	comfunc.h	/^int load_remote_mysql_info(mydb_t *, cw_site_t * site);$/;"	p	signature:(mydb_t *, cw_site_t * site)
-load_remote_mysql_info	cwind_db.c	/^int load_remote_mysql_info(mydb_t * mysql_info, cw_site_t * site)$/;"	f	signature:(mydb_t * mysql_info, cw_site_t * site)
+load_remote_mysql_info	db.c	/^int load_remote_mysql_info(mydb_t * mysql_info, cw_site_t * site)$/;"	f	signature:(mydb_t * mysql_info, cw_site_t * site)
 load_site_info	server.c	/^int load_site_info(mydb_t * mdb, cw_site_t * site)$/;"	f	signature:(mydb_t * mdb, cw_site_t * site)
 load_site_list	comfunc.h	/^int load_site_list(mydb_t *, cw_site_list_t ** list);$/;"	p	signature:(mydb_t *, cw_site_list_t ** list)
-load_site_list	cwind_db.c	/^int load_site_list(mydb_t * mdb, cw_site_list_t ** list)$/;"	f	signature:(mydb_t * mdb, cw_site_list_t ** list)
+load_site_list	db.c	/^int load_site_list(mydb_t * mdb, cw_site_list_t ** list)$/;"	f	signature:(mydb_t * mdb, cw_site_list_t ** list)
 main	fetch_web.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
 main	server.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
-main	v.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
 max_proc	cwind.h	/^	int max_proc;$/;"	m	struct:__anon7	access:public
 md5	cwind.h	/^	char md5[MAX_MD5];$/;"	m	struct:cw_site_s	access:public
 mtx	cwind.h	/^	pthread_mutex_t mtx;$/;"	m	struct:__anon6	access:public
@@ -292,6 +286,7 @@ page_free	event.h	/^void page_free(mrt_page_t * page);$/;"	p	signature:(mrt_page
 page_part_begin	cwind.h	/^	char page_part_begin[SMALL_STR];$/;"	m	struct:__anon4	access:public
 page_part_end	cwind.h	/^	char page_part_end[SMALL_STR];$/;"	m	struct:__anon4	access:public
 parse_cmd	comfunc.c	/^int parse_cmd(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
+parse_cmd	comfunc.h	/^int parse_cmd(int argc, char* argv[]);$/;"	p	signature:(int argc, char* argv[])
 parse_db_conf	comfunc.h	/^int parse_db_conf();$/;"	p	signature:()
 part_begin	cwind.h	/^	char part_begin[SMALL_STR];$/;"	m	struct:__anon3	access:public
 part_begin	cwind.h	/^	char part_begin[SMALL_STR];$/;"	m	struct:__anon5	access:public
@@ -305,9 +300,9 @@ recv_html	comfunc.h	/^int recv_html(char *url, char *data);$/;"	p	signature:(cha
 recv_num	cwind.h	/^	uint16_t recv_num;$/;"	m	struct:cw_site_s	access:public
 remote_mysql_id	cwind.h	/^	int remote_mysql_id;$/;"	m	struct:cw_site_s	access:public
 save_joke_info	event.h	/^int save_joke_info(cw_site_t * site, cw_content_t * joke);$/;"	p	signature:(cw_site_t * site, cw_content_t * joke)
-save_joke_info2	cwind_db.c	/^int save_joke_info2(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
+save_joke_info2	db.c	/^int save_joke_info2(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
 save_preview_list	event.h	/^int save_preview_list(cw_site_t * site);$/;"	p	signature:(cw_site_t * site)
-save_site	cwind_db.c	/^int save_site(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
+save_site	db.c	/^int save_site(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
 second_class	cwind.h	/^	string_t second_class;$/;"	m	struct:cw_class_s	access:public
 second_class	cwind.h	/^	string_t second_class;$/;"	m	struct:cw_content_s	access:public
 send_html_list	distribute_web.c	/^int send_html_list(T_jsp_list * jlst, T_ftp_session * ftp)$/;"	f	signature:(T_jsp_list * jlst, T_ftp_session * ftp)
@@ -315,7 +310,7 @@ serv_host	cwind.h	/^	char serv_host[MAX_ADDR];$/;"	m	struct:__anon7	access:publi
 serv_port	cwind.h	/^	int serv_port;$/;"	m	struct:__anon7	access:public
 serv_usage	comfunc.c	/^void serv_usage(char *pname)$/;"	f	signature:(char *pname)
 server	comfunc.c	/^extern cw_config_t server;$/;"	x
-server	cwind_db.c	/^extern cw_config_t server;$/;"	x
+server	db.c	/^extern cw_config_t server;$/;"	x
 server	distribute_web.c	/^extern cw_config_t server;$/;"	x
 server	fetch_web.c	/^S_config server;$/;"	v
 server	fetch_web.c	/^extern cw_config_t server;$/;"	x
@@ -323,12 +318,12 @@ server	server.c	/^cw_config_t server;$/;"	v
 server_init	event.h	/^int server_init();$/;"	p	signature:()
 server_start	event.h	/^int server_start();$/;"	p	signature:()
 server_start	server.c	/^int server_start(void *dat)$/;"	f	signature:(void *dat)
-set_url_status	cwind_db.c	/^int set_url_status(cw_site_t * site, char *url, int type, int status)$/;"	f	signature:(cw_site_t * site, char *url, int type, int status)
+set_url_status	db.c	/^int set_url_status(cw_site_t * site, char *url, int type, int status)$/;"	f	signature:(cw_site_t * site, char *url, int type, int status)
 set_url_status	event.h	/^int set_url_status(cw_site_t * site, char *url, int type, int status);$/;"	p	signature:(cw_site_t * site, char *url, int type, int status)
 site_id	cwind.h	/^	int site_id;$/;"	m	struct:cw_site_s	access:public
 site_list	cwind.h	/^	cw_site_list_t *site_list;$/;"	m	struct:__anon7	access:public
 site_log_init	comfunc.h	/^int site_log_init(cw_site_t * site);$/;"	p	signature:(cw_site_t * site)
-site_log_init	cwind_db.c	/^int site_log_init(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
+site_log_init	db.c	/^int site_log_init(cw_site_t * site)$/;"	f	signature:(cw_site_t * site)
 size	cwind.h	/^	int32_t size;		\/\/flash文件大小$/;"	m	struct:cw_content_s	access:public
 stat	cwind.h	/^	uint16_t stat;$/;"	m	struct:__anon7	access:public
 stat	cwind.h	/^	uint8_t stat;$/;"	m	struct:__anon6	access:public

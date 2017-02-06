@@ -31,4 +31,6 @@ int recv_html(char *url, char *data);
 
 int site_log_init(cw_site_t * site);
 
+int parse_cmd(int argc, char* argv[]);
+
 #endif

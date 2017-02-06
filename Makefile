@@ -1,19 +1,19 @@
+all: cwind
 
 SRCDIRS=lib lib-html cwind
 
+.PHONY:cwind
 
 
-default: cwind_exec
-
-cwind_exec:
+cwind:
 	for SUBDIR in $(SRCDIRS); do \
-			cd $$SUBDIR; make DEBUG=$(DEBUG); cd ..; \
-			done
+		cd $$SUBDIR; make DEBUG=$(DEBUG); cd ..; \
+		done
 
 
 clean:
 	for SUBDIR in $(SRCDIRS); do \
-			cd $$SUBDIR; make clean; cd ..; \
-			done
+		cd $$SUBDIR; make clean; cd ..; \
+		done
 
 cl:clean

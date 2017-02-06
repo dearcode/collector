@@ -233,13 +233,14 @@ int string_replace_part(string_t * src, char *from_begin, char *from_end, char *
 
 int string_printf(string_t * str, const char *fmt, ...)
 {
-	va_list ap;
-	va_list ap2;
+	va_list ap, ap2;
 	int32_t len;
+
 	va_start(ap, fmt);
 	va_copy(ap2, ap);
 	len = vsnprintf(str->str, str->size, fmt, ap);
 	va_end(ap);
+
 	if (len >= str->size) {
 		M_cvril((str->str = M_realloc(str->str, len + 1)), "realloc string buffer error.");
 		str->size = len + 1;

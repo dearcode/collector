@@ -10,7 +10,7 @@ int save_site(cw_site_t * site)
 	char sql[MAX_LINE] = { 0 };
 	string_t sql_cmd = { 0 };
 
-	sprintf(sql, "update site_info set site_md5='%s' where site_id = %d", site->md5, site->site_id);
+	sprintf(sql, "update site_info set site_md5='%s' where id = %d", site->md5, site->site_id);
 
 	sql_cmd.str = sql;
 	sql_cmd.len = strlen(sql);
@@ -56,26 +56,24 @@ int load_remote_mysql_info(mydb_t * mysql_info, cw_site_t * site)
 {
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sqlcmd[MAX_LINE] = { 0 };
 	string_t cmd = { 0 };
 
-	sprintf(sqlcmd, "select host, port, username, password, dbname "
-		" from remote_mysql where remote_mysql_id=%d", site->remote_mysql_id);
-
-	cmd.str = sqlcmd;
-	cmd.len = strlen(sqlcmd);
+	string_printf(&cmd, "select host, port, username, password, dbname from remote_mysql where remote_mysql_id=%d", site->remote_mysql_id);
 
 	if (mydb_query(mysql_info, &cmd)) {
-		log_error("mydb_query error, sql:%s, error:%s.", sqlcmd, mysql_error(&mysql_info->srv));
+		log_error("mydb_query error, sql:%s, error:%s.", cmd.str, mysql_error(&mysql_info->srv));
+		string_free(&cmd);
 		return MRT_ERR;
 	}
 
 	res = mysql_store_result(&mysql_info->srv);
 
 	if (!res || mysql_num_rows(res) == 0) {
-		log_error("No found record, sql:%s.", sqlcmd);
+		log_error("No found record, sql:%s.", cmd.str);
+		string_free(&cmd);
 		return MRT_ERR;
 	}
+	string_free(&cmd);
 
 	if ((row = mysql_fetch_row(res))) {
 		site->mysql_info = M_alloc(sizeof(*site->mysql_info));
@@ -101,8 +99,7 @@ int load_content_tag(mydb_t * mdb, cw_site_t * site)
 
 	sprintf(sqlcmd, "select part_begin, part_end, href_begin, href_end, "
 		"date_begin, date_end, pic_begin, pic_end, "
-		"desc_begin, desc_end, caption_begin, caption_end, content_begin, "
-		"content_end from content_tag where content_id=%d", site->content_id);
+		"desc_begin, desc_end, caption_begin, caption_end, content_begin, content_end from content_tag where id=%d", site->content_id);
 
 	cmd.str = sqlcmd;
 	cmd.len = strlen(sqlcmd);
@@ -151,8 +148,7 @@ int load_list_tag(mydb_t * mdb, cw_site_t * site)
 
 	sprintf(sqlcmd,
 		"select list_part_begin, list_part_end, href_part_begin, href_part_end, "
-		"href_begin, href_end, caption_begin, caption_end, page_part_begin, page_part_end, "
-		"next_caption from list_tag where list_id=%d", site->list_tag_id);
+		"href_begin, href_end, caption_begin, caption_end, page_part_begin, page_part_end, next_caption from list_tag where id=%d", site->list_tag_id);
 
 	cmd.str = sqlcmd;
 	cmd.len = strlen(sqlcmd);
@@ -205,8 +201,7 @@ int load_filter(mydb_t * mdb, cw_site_t * site)
 	LIST_INIT(&site->filter->remove_list, head);
 	LIST_INIT(&site->filter->replace_list, head);
 
-	if (string_printf
-	    (&cmd, "select type, key1, key2 from html_filter where group_id = %d", site->html_filter_id) == MRT_ERR) {
+	if (string_printf(&cmd, "select type, key1, key2 from html_filter where group_id = %d", site->html_filter_id) == MRT_ERR) {
 		log_error("string_printf error:%s", get_error());
 		return MRT_ERR;
 	}
@@ -263,11 +258,10 @@ int load_site_list(mydb_t * mdb, cw_site_list_t ** list)
 
 	LIST_INIT(site_list, head);
 
-	if (string_printf(&cmd, "select site_id, name, url, md5, level, "
+	if (string_printf(&cmd, "select site_info.id, name, url, md5, level, "
 			  "hot_part_begin, hot_part_end, class_tag.part_begin, class_tag.part_end, "
 			  "list_tag_id, content_tag_id, html_filter_id, remote_mysql_id from site_info, class_tag "
-			  "where status = 1 and site_info.class_tag_id = class_tag.class_id and mod(site_id, %d) = %d",
-			  server.max_proc, server.cur_proc) == MRT_ERR) {
+			  "where status = 1 and site_info.class_tag_id = class_tag.id and mod(site_info.id, %d) = %d", server.max_proc, server.cur_proc) == MRT_ERR) {
 		log_error("string_printf error:%s", get_error());
 		return MRT_ERR;
 	}
@@ -309,9 +303,7 @@ int load_site_list(mydb_t * mdb, cw_site_list_t ** list)
 		site_info->all_sum = 0;
 		site_info->recv_num = 0;
 
-		log_info
-		    ("site_id:%s, site_name:%s, site_url:%s, site_md5:%s, site_level:%s",
-		     row[0], row[1], row[2], row[3], row[4]);
+		log_info("site_id:%s, site_name:%s, site_url:%s, site_md5:%s, site_level:%s", row[0], row[1], row[2], row[3], row[4]);
 
 		LIST_INSERT_HEAD(site_list, head, site_info, node);
 		site_list->all_sum++;
@@ -339,8 +331,7 @@ int site_log_init(cw_site_t * site)
 		 " `status` int(11) unsigned NOT NULL COMMENT '1:采集成功 2:采集失败了', "
 		 " PRIMARY KEY (`id`), "
 		 " UNIQUE KEY `uniq_url` (`url_crc32`,`url`) USING BTREE, "
-		 " KEY `idx_type` (`type`) USING BTREE "
-		 "     ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ", site->site_id);
+		 " KEY `idx_type` (`type`) USING BTREE " "     ) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ", site->site_id);
 
 	cmd.str = buf;
 	cmd.len = strlen(buf);
@@ -370,8 +361,7 @@ int find_url_status(cw_site_t * site, char *url, int type)
 	MYSQL *srv = &(server.cwind_db->srv);
 	MYSQL_ROW row;
 
-	snprintf(buf, sizeof(buf),
-		 "select status from `site_%d_log` where type=%d and url='%s'", site->site_id, type, url);
+	snprintf(buf, sizeof(buf), "select status from `site_%d_log` where type=%d and url='%s'", site->site_id, type, url);
 
 	cmd.str = buf;
 	cmd.len = strlen(buf);
@@ -407,16 +397,13 @@ int set_url_status(cw_site_t * site, char *url, int type, int status)
 	string_t cmd = { 0 };
 
 	snprintf(buf, sizeof(buf),
-		 "insert `site_%d_log` (url_crc32, url, type, fetch_date, status) values (crc32('%s'), '%s', %d, UNIX_TIMESTAMP(), %d)",
-		 site->site_id, url, url, type, status);
+		 "insert `site_%d_log` (url_crc32, url, type, fetch_date, status) values (crc32('%s'), '%s', %d, UNIX_TIMESTAMP(), %d)", site->site_id, url, url, type, status);
 
 	cmd.str = buf;
 	cmd.len = strlen(buf);
 
 	if (mydb_exec(server.cwind_db, &cmd) != 1) {
-		snprintf(buf, sizeof(buf),
-			 "update `site_%d_log` set fetch_date = UNIX_TIMESTAMP(), status = %d where url='%s'",
-			 site->site_id, status, url);
+		snprintf(buf, sizeof(buf), "update `site_%d_log` set fetch_date = UNIX_TIMESTAMP(), status = %d where url='%s'", site->site_id, status, url);
 		if (mydb_exec(server.cwind_db, &cmd) != 1) {
 			log_error("query error, sql:%s.", buf);
 			return MRT_ERR;
@@ -507,9 +494,7 @@ int content_info_save(cw_site_t * site, cw_content_t * ct)
 
 	format_mysql_string(ct->content.str);
 
-	M_ciril(string_printf
-		(&cmd, "call cwindPushArticle('%s', '%s', '%s')",
-		 ct->second_class.str, ct->caption.str, ct->content.str), "string print sql error.");
+	M_ciril(string_printf(&cmd, "call cwindPushArticle('%s', '%s', '%s')", ct->second_class.str, ct->caption.str, ct->content.str), "string print sql error.");
 
 	if (mydb_query_int(site->mysql_info, &cmd, &nid) == MRT_ERR) {
 		log_error("exec sql cmd error:%s, sql:%s.", get_error(), cmd.str);

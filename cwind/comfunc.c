@@ -8,18 +8,16 @@ extern cw_config_t server;
 
 void serv_usage(char *pname)
 {
-	printf("Usage: %s -h host -p port [-d]\n"
-	       "\n  -h host\tbind ip." "\n  -p port\tbind port." "\n  -d     \trun as daemon.\n", pname);
-
+	printf("Usage: %s -d\trun as daemon.\n", pname);
 	return;
 }
 
 int parse_cmd(int argc, char *argv[])
 {
-	const char *options = "h:p:d";
+	const char *options = "hd";
 	int opt;
 
-	if (argc < 3) {
+	if (argc < 1) {
 		serv_usage(argv[0]);
 		return MRT_ERR;
 	}
@@ -29,13 +27,8 @@ int parse_cmd(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, options)) != EOF) {
 		switch (opt) {
 		case 'h':
-			memset(server.serv_host, 0, MAX_IP);
-			strcpy(server.serv_host, optarg);
-			break;
-
-		case 'p':
-			server.serv_port = atoi(optarg);
-			break;
+			serv_usage(argv[0]);
+			return MRT_ERR;
 
 		case 'd':
 			server.daemon = 1;
@@ -43,7 +36,6 @@ int parse_cmd(int argc, char *argv[])
 
 		default:
 			serv_usage(argv[0]);
-
 			break;
 		}
 	}
@@ -116,7 +108,7 @@ int load_config()
 	server.home = getenv(HOME_ENV);
 	if (!server.home) {
 		printf("%s no find  environment variable:%s\n", __func__, HOME_ENV);
-		return MRT_ERR;
+		server.home = ".";
 	}
 
 	sprintf(file_name, "%s/var/etc/%s", server.home, CONFILE);
