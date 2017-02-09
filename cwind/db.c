@@ -206,7 +206,8 @@ int load_filter(mydb_t * mdb, site_t * site)
 	if (!res || mysql_num_rows(res) == 0) {
 		log_error("No found record, sql:%s.", cmd.str);
 		string_free(&cmd);
-		return MRT_ERR;
+		//没找到就算了
+		return MRT_OK;
 	}
 	string_free(&cmd);
 
@@ -240,8 +241,8 @@ int load_site_list(mydb_t * mdb, site_list_t ** list)
 	MYSQL_RES      *res;
 	MYSQL_ROW       row;
 	string_t        cmd;
-	site_t      *site_info;
-	site_list_t *site_list;
+	site_t         *site_info;
+	site_list_t    *site_list;
 
 	s_zero(cmd);
 	M_cvril((site_list = M_alloc(sizeof(site_list_t))), "malloc site list error");
@@ -283,7 +284,6 @@ int load_site_list(mydb_t * mdb, site_list_t ** list)
 
 		site_info->all_sum = 0;
 		site_info->recv_num = 0;
-
 
 		log_info("site_id:%s, site_name:%s, site_url:%s, site_md5:%s, site_level:%s", row[0], row[1], row[2], row[3], row[4]);
 
