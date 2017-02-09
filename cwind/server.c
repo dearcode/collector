@@ -2,27 +2,27 @@
 #include "event.h"
 #include "comfunc.h"
 
-cw_config_t server;
+cw_config_t     server;
 
-int load_site_info(mydb_t * mdb, cw_site_t * site)
+int load_site_info(mydb_t * mdb, site_t * site)
 {
 	if (load_list_tag(mdb, site) == MRT_ERR) {
-		log_error("Load game lisite->tags error, site id:%d, name:%s.", site->site_id, site->name);
+		log_error("Load game lisite->tags error, site id:%d, name:%s.", site->id, site->name);
 		return MRT_ERR;
 	}
 
 	if (load_content_tag(mdb, site) == MRT_ERR) {
-		log_error("Load game info tags error, site id:%d, name:%s.", site->site_id, site->name);
+		log_error("Load game info tags error, site id:%d, name:%s.", site->id, site->name);
 		return MRT_ERR;
 	}
 
 	if (load_filter(mdb, site) == MRT_ERR) {
-		log_error("Load filter info tags error, site id:%d, name:%s.", site->site_id, site->name);
+		log_error("Load filter info tags error, site id:%d, name:%s.", site->id, site->name);
 		return MRT_ERR;
 	}
 
-	if (load_remote_mysql_info(mdb, site) == MRT_ERR) {
-		log_error("Load remote mysql info error, site id:%d, name:%s.", site->site_id, site->name);
+	if (load_store_info(mdb, site) == MRT_ERR) {
+		log_error("Load remote mysql info error, site id:%d, name:%s.", site->id, site->name);
 		return MRT_ERR;
 	}
 
@@ -31,7 +31,7 @@ int load_site_info(mydb_t * mdb, cw_site_t * site)
 
 int server_start(void *dat)
 {
-	cw_site_t *site = NULL;
+	site_t      *site = NULL;
 
 	if (load_site_list(server.cwind_db, &server.site_list) == MRT_ERR) {
 		log_error("%s load site list error.", __func__);
@@ -72,9 +72,11 @@ int main(int argc, char *argv[])
 		return MRT_ERR;
 	}
 
-	if (logger_init("./var/log/", "cwind", 1) == MRT_ERR) {
-		printf("%s init logger error:%s.\n", __func__, get_error());
-		return MRT_ERR;
+	if (server.daemon) {
+		if (logger_init("./var/log/", "cwind", 1) == MRT_ERR) {
+			printf("%s init logger error:%s.\n", __func__, get_error());
+			return MRT_ERR;
+		}
 	}
 
 	if (memory_pool_init() == MRT_ERR) {

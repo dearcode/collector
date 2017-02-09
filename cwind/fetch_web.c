@@ -5,9 +5,9 @@
 
 extern cw_config_t server;
 
-int fetch_swf_url(cw_content_t * content);
+int             fetch_swf_url(content_t * content);
 
-void content_free(cw_content_t * content)
+void content_free(content_t * content)
 {
 	if (!content)
 		return;
@@ -17,14 +17,13 @@ void content_free(cw_content_t * content)
 	string_free(&content->content);
 }
 
-int check_update(cw_site_t * site, html_page_t * page)
+int check_update(site_t * site, html_page_t * page)
 {
-	string_t content;
-	char md5[MAX_MD5];
+	string_t        content;
+	char            md5[MAX_MD5];
 
-	if (string_fetch(&page->data, site->hot_part_begin, site->hot_part_end, &content) == MRT_ERR) {
-		log_error("no found hot part start:%s, end:%s, url:%s",
-			  site->hot_part_begin, site->hot_part_end, site->url);
+	if (string_fetch(&page->data, site->area_begin, site->area_end, &content) == MRT_ERR) {
+		log_error("no found hot part start:%s, end:%s, url:%s", site->area_begin, site->area_end, site->url);
 		return MRT_ERR;
 	}
 
@@ -47,12 +46,12 @@ int check_update(cw_site_t * site, html_page_t * page)
 	return MRT_OK;
 }
 
-hashmap_t urlMap = { 0 };
+hashmap_t       urlMap = { 0 };
 
 //返回1存在
 int url_cache_find(char *url)
 {
-	char *val = NULL;
+	char           *val = NULL;
 
 	if (!urlMap.size)
 		return MRT_OK;
@@ -82,10 +81,10 @@ int url_cache_add(char *url)
 	return MRT_ERR;
 }
 
-int fetch_next_page(cw_site_t * site, html_page_t * page, string_t * url)
+int fetch_next_page(site_t * site, html_page_t * page, string_t * url)
 {
-	cw_list_tag_t *ltag = site->list_tag;
-	string_t part;
+	tag_list_t     *ltag = &site->list_tag;
+	string_t        part;
 
 	s_zero(part);
 
@@ -120,11 +119,11 @@ int fetch_next_page(cw_site_t * site, html_page_t * page, string_t * url)
 //功能：
 //      把当前页面的url收集下, 取ltag->caption_begin与ltag->caption_end之间的url，一直找到没有
 //
-int fetch_article_url(cw_site_t * site, cw_class_t * class, html_page_t * page)
+int fetch_article_url(site_t * site, html_page_t * page)
 {
-	cw_content_t *content = NULL;
-	cw_list_tag_t *ltag = site->list_tag;
-	string_t list, part, item, url, caption;
+	content_t      *content = NULL;
+	tag_list_t     *ltag = &site->list_tag;
+	string_t        list, part, item, url, caption;
 
 	s_zero(list);
 	s_zero(part);
@@ -171,18 +170,11 @@ int fetch_article_url(cw_site_t * site, cw_class_t * class, html_page_t * page)
 			continue;
 		}
 
-		if (content->first_class.len) {
-			string_copy(&content->first_class, &class->first_class);
-		}
+		string_copy(&content->url_real, &url);
 
-		string_copy(&content->second_class, &class->second_class);
+		LIST_INSERT_HEAD(&site->content_list, head, content, node);
 
-        string_copy(&content->url_real, &url);
-
-		LIST_INSERT_HEAD(site->content_list, head, content, node);
-
-		log_debug("find clase first:%s second:%s caption:%s url:%s",
-			  content->first_class.str, content->second_class.str, caption.str, content->url_real.str);
+		log_debug("find caption:%s url:%s", caption.str, content->url_real.str);
 	}
 
 	string_free(&list);
@@ -195,9 +187,9 @@ int fetch_article_url(cw_site_t * site, cw_class_t * class, html_page_t * page)
 }
 
 /*
-int fetch_joke_url(cw_site_t *site, html_page_t *page, char *part)
+int fetch_joke_url(site_t *site, html_page_t *page, char *part)
 {
-    cw_content_t *content = NULL;
+    content_t *content = NULL;
     int gnum = 0;
     char url[MAX_URL] = {0};
     char caption[MAX_CAPTION] = {0};
@@ -229,8 +221,8 @@ int fetch_joke_url(cw_site_t *site, html_page_t *page, char *part)
 
 int fix_content_image(html_page_t * page, string_t * content)
 {
-	string_t simg, url, hurl, limg;
-	int len;
+	string_t        simg, url, hurl, limg;
+	int             len;
 
 	s_zero(simg);
 	s_zero(url);
@@ -273,7 +265,7 @@ int fix_content_image(html_page_t * page, string_t * content)
 
 int fix_caption(string_t * cp)
 {
-	char *pl = NULL, *pr = NULL;
+	char           *pl = NULL, *pr = NULL;
 
 	M_cpvril(cp);
 
@@ -289,20 +281,20 @@ int fix_caption(string_t * cp)
 	return MRT_SUC;
 }
 
-int fetch_article_content(cw_site_t * site)
+int fetch_article_content(site_t * site)
 {
-	cw_content_tag_t *ctag = NULL;
-	cw_content_t *content = NULL;
-	html_page_t page;
-	string_t part, desc;
+	tag_content_t  *ctag = NULL;
+	content_t      *content = NULL;
+	html_page_t     page;
+	string_t        part, desc;
 
-	ctag = site->content_tag;
+	ctag = &site->content_tag;
 
 	s_zero(page);
 	s_zero(part);
 	s_zero(desc);
 
-	while ((content = LIST_FIRST(site->content_list, head))) {
+	while ((content = LIST_FIRST(&site->content_list, head))) {
 		do {
 			log_debug("will recv page url:%s", content->url_real.str);
 			if (http_recv_page(content->url_real.str, &page, 1) == MRT_ERR) {
@@ -321,24 +313,19 @@ int fetch_article_content(cw_site_t * site)
 			}
 
 			if (string_fetch(&part, ctag->caption_begin, ctag->caption_end, &content->caption) == MRT_ERR) {
-				log_error
-				    ("string_fetch caption error:%s url:%s, src:%s",
-				     get_error(), content->url_real.str, part.str);
+				log_error("string_fetch caption error:%s url:%s, src:%s", get_error(), content->url_real.str, part.str);
 				break;
 			}
 
 			fix_caption(&content->caption);
 
 			if (string_fetch(&part, ctag->desc_begin, ctag->desc_end, &content->desc) == MRT_ERR) {
-				log_error
-				    ("No found desc part in url:%s, part start:%s, end:%s.",
-				     content->url_real.str, ctag->desc_begin, ctag->desc_end);
+				log_error("No found desc part in url:%s, part start:%s, end:%s.", content->url_real.str, ctag->desc_begin, ctag->desc_end);
 			}
 
 			if (string_fetch(&part, ctag->content_begin, ctag->content_end, &content->content) == MRT_ERR) {
-				log_error
-				    ("string_fetch content error:%s url:%s, part start:%s, end:%s.",
-				     get_error(), content->url_real.str, ctag->content_begin, ctag->content_end);
+				log_error("string_fetch content error:%s url:%s, part start:%s, end:%s.", get_error(), content->url_real.str, ctag->content_begin,
+					  ctag->content_end);
 				break;
 			}
 //            log_debug("will fix content image, url:%s", content->url_real.str);
@@ -347,7 +334,7 @@ int fetch_article_content(cw_site_t * site)
 				break;
 			}
 
-			if (html_mark_filter(site->filter, &content->content) == MRT_ERR) {
+			if (html_mark_filter(&site->filter, &content->content) == MRT_ERR) {
 				log_error("html_mark_filter content error, url:[%s].", content->url_real.str);
 				break;
 			}
@@ -361,7 +348,7 @@ int fetch_article_content(cw_site_t * site)
 			}
 		} while (0);
 
-		LIST_REMOVE_HEAD(site->content_list, head);
+		LIST_REMOVE_HEAD(&site->content_list, head);
 		content_free(content);
 		http_free_page(&page);
 	}
@@ -372,150 +359,56 @@ int fetch_article_content(cw_site_t * site)
 	return MRT_SUC;
 }
 
-int fix_class_info(cw_site_t * site, html_page_t * page)
+int fetch_dispatch(site_t * site)
 {
-	cw_class_t *class = NULL;
-	char *pstr = NULL;
-
-	LIST_FOREACH(class, node, site->class_list, head) {
-		html_fix_url(page, &class->url);
-		html_fix_caption(page, &class->second_class);
-		if ((pstr = strchr(class->second_class.str, '('))) {
-			*pstr = 0;
-			class->second_class.len = strlen(class->second_class.str);
-		}
-		log_info("Current class caption:%s, url:%s", class->second_class.str, class->url.str);
-	}
-
-	return MRT_SUC;
-}
-
-int fetch_class(cw_site_t * site, html_page_t * page)
-{
-	cw_class_t *class = NULL;
-	cw_class_tag_t *ct = site->class_tag;
-	string_t part, url, caption;
-	char *pstr = NULL;
-
-	s_zero(part);
-	s_zero(url);
-	s_zero(caption);
-
-	if (string_move_fetch(&page->data, ct->part_begin, ct->part_end, &part)
-	    == MRT_ERR) {
-		log_error("no found class part start:%s, end:%s, in src:%s.",
-			  ct->part_begin, ct->part_end, page->data.str);
-		return MRT_ERR;
-	}
-
-	while (html_move_fetch_href(&part, &url, &caption) == MRT_SUC) {
-		M_cvril((class = M_alloc(sizeof(*class))), "malloc new class error.");
-
-		if (html_fix_url(page, &url) == MRT_ERR) {
-			log_error("html_fix_url error, url:%s", url.str);
-			continue;
-		}
-
-		if (html_fix_caption(page, &caption) == MRT_ERR) {
-			log_error("html_fix_caption error, caption:%s", caption.str);
-			continue;
-		}
-		//分类里的标题要过滤掉()[], 这里面可能写的是数量
-		if ((pstr = strchr(caption.str, '('))) {
-			*pstr = 0;
-			caption.len = strlen(caption.str);
-		}
-
-		if ((pstr = strchr(caption.str, '['))) {
-			*pstr = 0;
-			caption.len = strlen(caption.str);
-		}
-
-		string_copy(&class->url, &url);
-
-		string_copy(&class->second_class, &caption);
-
-		LIST_INSERT_HEAD(site->class_list, head, class, node);
-
-		log_info("find class:%s url:%s", class->second_class.str, url.str);
-	}
-
-	/*
-	   fix_class_info(site, page);
-	   if(load_class_id(class) == MRT_ERR)
-	   {
-	   log_error("%s load class id error.", __func__);
-	   }
-	 */
-	string_free(&part);
-	string_free(&url);
-	string_free(&caption);
-
-	return MRT_SUC;
-}
-
-int fetch_dispatch(cw_site_t * site)
-{
-	cw_class_t *class = NULL;
-	html_page_t page;
-	string_t url;
+	html_page_t     page;
+	string_t        url;
 
 	s_zero(url);
 	s_zero(page);
 
-	LIST_FOREACH(class, node, site->class_list, head) {
-		string_copy(&url, &class->url);
+	string_printf(&url, site->url, strlen(site->url));
 
-		printf("will fetch class first:%s second:%s\n", class->first_class.str, class->second_class.str);
-		//log_info("will fetch class first:%s second:%s", class->first_class.str, class->second_class.str);
+	while (!http_recv_page(url.str, &page, 1)) {
+		//这里找到了分类的一个页面
+		log_info("recv page url:%s", url.str);
 
-		while (!http_recv_page(url.str, &page, 1)) {
-			//这里找到了分类的一个页面
-			log_info("recv page url:%s", url.str);
-
-			if (html_fix_charset(&page, "utf8") == MRT_ERR) {
-				log_error("change page charset to UTF-8 error, url:%s", url.str);
-				http_free_page(&page);
-				break;
-			}
-			//把这个页面里的文章url全部找出来
-			if (fetch_article_url(site, class, &page) == MRT_ERR) {
-				log_error("fetch content url error, url:%s", url.str);
-				http_free_page(&page);
-				break;
-			}
-			//把找出来的文章收集回来存入数据库中
-			if (fetch_article_content(site) == MRT_ERR) {
-				log_error("fetch_article_content error.");
-			}
-			//找到分类的下一页
-			if (fetch_next_page(site, &page, &url) == MRT_ERR) {
-				log_error("current page no found next page, url:%s", url.str);
-				http_free_page(&page);
-				break;
-			}
-
-			log_info("next page:%s", url.str);
+		if (html_fix_charset(&page, "utf8") == MRT_ERR) {
+			log_error("change page charset to UTF-8 error, url:%s", url.str);
 			http_free_page(&page);
+			break;
+		}
+		//把这个页面里的文章url全部找出来
+		if (fetch_article_url(site, &page) == MRT_ERR) {
+			log_error("fetch content url error, url:%s", url.str);
+			http_free_page(&page);
+			break;
+		}
+		//把找出来的文章收集回来存入数据库中
+		if (fetch_article_content(site) == MRT_ERR) {
+			log_error("fetch_article_content error.");
+		}
+		//找到分类的下一页
+		if (fetch_next_page(site, &page, &url) == MRT_ERR) {
+			log_error("current page no found next page, url:%s", url.str);
+			http_free_page(&page);
+			break;
 		}
 
-		printf("fetch class over first:%s second:%s\n", class->first_class.str, class->second_class.str);
-		//log_info("fetch class over first:%s second:%s", class->first_class.str, class->second_class.str);
+		log_info("next page:%s", url.str);
+		http_free_page(&page);
 	}
 
 	return MRT_SUC;
 }
 
-int check_web(cw_site_t * site)
+int check_web(site_t * site)
 {
-	html_page_t page;
-	site->content_list = M_alloc(sizeof(cw_content_list_t));
-	site->class_list = M_alloc(sizeof(cw_class_list_t));
+	html_page_t     page;
 
 	s_zero(page);
 
-	LIST_INIT(site->content_list, head);
-	LIST_INIT(site->class_list, head);
+	LIST_INIT(&site->content_list, head);
 
 	M_ciril(http_recv_page(site->url, &page, 1), "get web data error, site:%s, url:%s.", site->name, site->url);
 	strcpy(site->charset, "UTF-8");
@@ -547,8 +440,6 @@ int check_web(cw_site_t * site)
 	//直接返回了！！！！！！
 	//return MRT_SUC;
 
-	M_ciril(fetch_class(site, &page), "get class error, site:[%s], url:[%s].", site->name, site->url);
-
 	M_ciril(fetch_dispatch(site), "get content list error, site:[%s], url:[%s].", site->name, site->url);
 
 	// M_ciril(fetch_preview_info(site), "get content info error, site:[%s], url:[%s].", site->name, site->url);
@@ -562,11 +453,11 @@ int check_web(cw_site_t * site)
 
 #ifdef TEST_FETCH
 
-S_config server;
+S_config        server;
 
 int main(int argc, char *argv[])
 {
-	cw_content_t content;
+	content_t       content;
 
 	if (log_init("./", "cwind", "debug") == MRT_ERR) {
 		printf("%s init logger error.\n", __func__);

@@ -16,28 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `class_tag`
+-- Table structure for table `content`
 --
 
-DROP TABLE IF EXISTS `class_tag`;
+DROP TABLE IF EXISTS `content`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `class_tag` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `part_begin` varchar(256) NOT NULL DEFAULT '',
-  `part_end` varchar(256) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `content_tag`
---
-
-DROP TABLE IF EXISTS `content_tag`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `content_tag` (
+CREATE TABLE `content` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `part_begin` varchar(256) NOT NULL,
   `part_end` varchar(256) NOT NULL,
@@ -78,13 +63,13 @@ CREATE TABLE `cwind_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `html_filter`
+-- Table structure for table `filter`
 --
 
-DROP TABLE IF EXISTS `html_filter`;
+DROP TABLE IF EXISTS `filter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `html_filter` (
+CREATE TABLE `filter` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `key1` varchar(1024) NOT NULL,
   `key2` varchar(1024) NOT NULL,
@@ -95,13 +80,13 @@ CREATE TABLE `html_filter` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `list_tag`
+-- Table structure for table `list`
 --
 
-DROP TABLE IF EXISTS `list_tag`;
+DROP TABLE IF EXISTS `list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `list_tag` (
+CREATE TABLE `list` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `list_part_begin` varchar(256) NOT NULL,
   `list_part_end` varchar(256) NOT NULL,
@@ -120,21 +105,20 @@ CREATE TABLE `list_tag` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `remote_mysql`
+-- Table structure for table `relation`
 --
 
-DROP TABLE IF EXISTS `remote_mysql`;
+DROP TABLE IF EXISTS `relation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `remote_mysql` (
-  `remote_mysql_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `host` varchar(64) NOT NULL,
-  `port` int(11) NOT NULL,
-  `username` varchar(64) NOT NULL,
-  `password` varchar(64) NOT NULL,
-  `dbname` varchar(64) NOT NULL,
-  PRIMARY KEY (`remote_mysql_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+CREATE TABLE `relation` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `filter_id` bigint(20) unsigned NOT NULL,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_relation` (`filter_id`,`site_id`) USING HASH
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,21 +151,37 @@ DROP TABLE IF EXISTS `site_info`;
 CREATE TABLE `site_info` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `status` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `name` varchar(64) NOT NULL,
-  `url` varchar(128) NOT NULL,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `url` varchar(128) NOT NULL DEFAULT '',
   `md5` varchar(64) NOT NULL DEFAULT '',
   `level` int(10) unsigned NOT NULL DEFAULT '0',
-  `hot_part_begin` varchar(256) NOT NULL DEFAULT '',
-  `hot_part_end` varchar(256) NOT NULL,
-  `list_tag_id` bigint(20) unsigned NOT NULL,
-  `class_tag_id` bigint(20) unsigned NOT NULL,
-  `content_tag_id` bigint(20) unsigned NOT NULL,
-  `html_filter_id` bigint(20) unsigned NOT NULL,
-  `remote_mysql_id` bigint(20) unsigned NOT NULL,
-  `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `area_begin` varchar(256) NOT NULL DEFAULT '' COMMENT '监控区域开始标识',
+  `area_end` varchar(256) NOT NULL DEFAULT '',
+  `list_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `content_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `store_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT 'store中的id',
+  `ctime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `mtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `store`
+--
+
+DROP TABLE IF EXISTS `store`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `store` (
+  `remote_mysql_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `host` varchar(64) NOT NULL,
+  `port` int(11) NOT NULL,
+  `username` varchar(64) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `dbname` varchar(64) NOT NULL,
+  PRIMARY KEY (`remote_mysql_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -193,4 +193,4 @@ CREATE TABLE `site_info` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-02-06 18:19:05
+-- Dump completed on 2017-02-09 11:01:08

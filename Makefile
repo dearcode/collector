@@ -1,19 +1,21 @@
-all: cwind
+all: lib lib-html cwind
 
-SRCDIRS=lib lib-html cwind
+.PHONY: lib lib-html cwind
 
-.PHONY:cwind
 
+lib:
+	cd lib; make DEBUG=$(DEBUG); cd ..; 
+
+lib-html:
+	cd lib-html; make DEBUG=$(DEBUG); cd ..; 
 
 cwind:
-	for SUBDIR in $(SRCDIRS); do \
-		cd $$SUBDIR; make DEBUG=$(DEBUG); cd ..; \
-		done
+	cd cwind; make DEBUG=$(DEBUG); cd ..; 
 
 
 clean:
-	for SUBDIR in $(SRCDIRS); do \
-		cd $$SUBDIR; make clean; cd ..; \
-		done
+	cd cwind; make clean; cd ..; 
+	cd lib; make clean; cd ..; 
+	cd lib-html; make clean; cd ..; 
 
 cl:clean
