@@ -88,10 +88,10 @@ int uri_chinese_encode(char *link, int llen, string_t * dest)
 			j++;
 		if (j) {
 			M_ciril(urlencode(link + i, j, mb, sizeof(mb)), "utf-8 encode error.");
-			M_ciril(string_cats(dest, mb), "string cats string error.");
+			string_cats(dest, mb);
 			i += j - 1;
 		} else
-			M_ciril(string_catb(dest, link + i, 1), "string_cats char error.");
+			string_catb(dest, link + i, 1);
 	}
 
 	return MRT_SUC;
@@ -103,49 +103,40 @@ int http_make_head(char *host, char *page, char *port, char *referer, string_t *
 	M_cpvril(page);
 	M_cpsril(port);
 
-#define HEAD_STR_CAT(s) \
-    do { \
-        if(string_cats(dest, s) == MRT_ERR) \
-        { \
-            log_error("string_cats error:%s, src:%s", get_error(), s); \
-            return MRT_ERR; \
-        } \
-    } while(0)
-
 	if (strcmp(page, "/") == 0)
-		HEAD_STR_CAT("GET / HTTP/1.1\r\n");
+		string_cats(dest, "GET / HTTP/1.1\r\n");
 	else {
 		if (page[0] == '/')
-			HEAD_STR_CAT("GET ");
+			string_cats(dest, "GET ");
 		else
-			HEAD_STR_CAT("GET /");
+			string_cats(dest, "GET /");
 
 		M_ciril(uri_chinese_encode(page, strlen(page), dest), "process field:page error.");
-		HEAD_STR_CAT(" HTTP/1.1\r\n");
+		string_cats(dest, " HTTP/1.1\r\n");
 	}
 
 	if (referer && *referer) {
-		HEAD_STR_CAT("Referer: ");
-		HEAD_STR_CAT(referer);
-		HEAD_STR_CAT("\r\n");
+		string_cats(dest, "Referer: ");
+		string_cats(dest, referer);
+		string_cats(dest, "\r\n");
 	}
 
 	if (*cookie) {
-		HEAD_STR_CAT("Cookie: ");
-		HEAD_STR_CAT(cookie);
-		HEAD_STR_CAT("\r\n");
+		string_cats(dest, "Cookie: ");
+		string_cats(dest, cookie);
+		string_cats(dest, "\r\n");
 	}
 
-	HEAD_STR_CAT("Host:");
-	HEAD_STR_CAT(host);
+	string_cats(dest, "Host:");
+	string_cats(dest, host);
 	if (strcmp(port, "80")) {
-		HEAD_STR_CAT(":");
-		HEAD_STR_CAT(port);
+		string_cats(dest, ":");
+		string_cats(dest, port);
 	}
 
-	HEAD_STR_CAT("\r\n");
-	HEAD_STR_CAT("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko\r\n");
-	HEAD_STR_CAT("Accept: */*\r\n\r\n");
+	string_cats(dest, "\r\n");
+	string_cats(dest, "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko\r\n");
+	string_cats(dest, "Accept: */*\r\n\r\n");
 
 	return MRT_SUC;
 }
@@ -343,19 +334,10 @@ int __get_http_page(char *url, char *referer, string_t * data)
 
 		switch (type) {
 		case 2:
-			if (string_catb(data, pstart, rsize) == MRT_ERR) {
-				log_error("string_copyb error:%m");
-				close(nfd);
-				return MRT_ERR;
-			}
+			string_catb(data, pstart, rsize);
 			break;
 		case 0:
-			if (string_catb(data, pstart, rsize) == MRT_ERR) {
-				log_error("string_copyb error:%m");
-				close(nfd);
-				return MRT_ERR;
-			}
-
+			string_catb(data, pstart, rsize);
 			if (data->len >= cLen) {
 				log_debug("recv success, content-length:%d recv size:%d", cLen, data->len);
 				data->len = cLen;
@@ -393,33 +375,14 @@ less_then_label:		ls = csize - psize;
 					lr += rsize;
 				}
 
-				if (string_catb(data, pstart, psize) == MRT_ERR) {
-					log_error("string_copyb pstart error:%m");
-					close(nfd);
-					M_free(lbuf);
-					return MRT_ERR;
-				}
-
-				if (string_catb(data, lbuf, ls) == MRT_ERR) {
-					log_error("string_copyb left buf error:%m");
-					close(nfd);
-					M_free(lbuf);
-					return MRT_ERR;
-				}
+				string_catb(data, pstart, psize);
+				string_catb(data, lbuf, ls);
 				M_free(lbuf);
 			} else if (psize == csize) {
-				if (string_catb(data, pstart, psize) == MRT_ERR) {
-					log_error("string_copyb pstart error:%m");
-					close(nfd);
-					return MRT_ERR;
-				}
+				string_catb(data, pstart, psize);
 			} else {
 				while (psize > csize) {
-					if (string_catb(data, pstart, csize) == MRT_ERR) {
-						log_error("string_copyb pstart error:%m");
-						close(nfd);
-						return MRT_ERR;
-					}
+					string_catb(data, pstart, csize);
 
 					pstart += csize;
 					psize = rsize - (pstart - s);
@@ -546,11 +509,7 @@ int __temp_file_close(char *url, string_t * new_path)
 			break;
 		}
 
-		if (string_printf(new_path, "userData/imageUniq/%s%s", md5_str, pstr) == MRT_ERR) {
-			log_error("string_printf error:%s", get_error());
-			iret = MRT_ERR;
-			break;
-		}
+		string_printf(new_path, "userData/imageUniq/%s%s", md5_str, pstr);
 
 		if (link(__temp_file_handle.from, new_path->str) == MRT_ERR) {
 			if (errno != EEXIST) {

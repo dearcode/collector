@@ -104,14 +104,8 @@ int html_move_fetch_href(string_t * src, string_t * url, string_t * caption)
 		log_error("string_move_fetch error:%s", get_error());
 		return MRT_ERR;
 	}
-	if (string_ltrim(caption) == MRT_ERR) {
-		log_error("string_ltrim caption error:%s", get_error());
-		return MRT_ERR;
-	}
-	if (string_rtrim(caption) == MRT_ERR) {
-		log_error("string_ltrim caption error:%s", get_error());
-		return MRT_ERR;
-	}
+	string_ltrim(caption);
+	string_rtrim(caption);
 	return MRT_SUC;
 }
 
@@ -197,26 +191,13 @@ int html_mark_filter(mrt_filter_t * filter, string_t * src)
 	//替换指定的内容
 	LIST_FOREACH(pmk, node, &filter->replace_list, head) {
 		while ((pmb = strstr(src->str, pmk->begin)) && *pmb) {
-			if (string_copyb(&nsrc, src->str, pmb - src->str) == MRT_ERR) {
-				log_error("string_copyb nsrc error:%s", get_error());
-				return MRT_ERR;
-			}
-			if (string_cats(&nsrc, pmk->end) == MRT_ERR) {
-				log_error("string_copyb nsrc error:%s", get_error());
-				return MRT_ERR;
-			}
+			string_copyb(&nsrc, src->str, pmb - src->str);
+			string_cats(&nsrc, pmk->end);
+
 			if (pmb + strlen(pmk->begin) && *(pmb + strlen(pmk->begin))) {
-				if (string_cats(&nsrc, pmb + strlen(pmk->begin)) == MRT_ERR) {
-					log_error("string_cats nsrc error:%s", get_error());
-					string_free(&nsrc);
-					return MRT_ERR;
-				}
+				string_cats(&nsrc, pmb + strlen(pmk->begin));
 			}
-			if (string_copy(src, &nsrc) == MRT_ERR) {
-				log_error("string_copy src error:%s", get_error());
-				string_free(&nsrc);
-				return MRT_ERR;
-			}
+			string_copy(src, &nsrc);
 		}
 	}
 	for (l_size = 0; l_size < src->len; l_size++) {
@@ -384,10 +365,7 @@ int html_fix_url(html_page_t * page, string_t * url)
 	}
 	if ((tbase[strlen(tbase) - 1] != '/' && purl[0] != '/'))
 		sep = "/";
-	if (string_printf(url, "%s%s%s", tbase, sep, purl) == MRT_ERR) {
-		log_error("string_copys error.");
-		return MRT_ERR;
-	}
+	string_printf(url, "%s%s%s", tbase, sep, purl);
 	return MRT_SUC;
 }
 
@@ -403,11 +381,7 @@ int html_fetch_base(string_t * src, html_page_t * page)
 			return MRT_ERR;
 		}
 		*pstr = 0;
-		if (string_copys(&page->base, page->url) == MRT_ERR) {
-			log_error("string_copys error:%s", get_error());
-			*pstr = '/';
-			return MRT_ERR;
-		}
+		string_copys(&page->base, page->url);
 		*pstr = '/';
 	}
 	return MRT_SUC;
@@ -423,10 +397,7 @@ int html_fetch_charset(string_t * src, html_page_t * page)
 		}
 	}
 	if (!strncasecmp(page->charset.str, "gb", 2)) {
-		if (string_printf(&page->charset, "GB18030") == MRT_ERR) {
-			log_error("string_printf error:%s", get_error());
-			return MRT_ERR;
-		}
+		string_printf(&page->charset, "GB18030");
 	}
 	return MRT_SUC;
 }

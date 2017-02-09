@@ -201,10 +201,7 @@ int load_filter(mydb_t * mdb, cw_site_t * site)
 	LIST_INIT(&site->filter->remove_list, head);
 	LIST_INIT(&site->filter->replace_list, head);
 
-	if (string_printf(&cmd, "select type, key1, key2 from html_filter where group_id = %d", site->html_filter_id) == MRT_ERR) {
-		log_error("string_printf error:%s", get_error());
-		return MRT_ERR;
-	}
+	string_printf(&cmd, "select type, key1, key2 from html_filter where group_id = %d", site->html_filter_id);
 
 	if (mydb_query(mdb, &cmd)) {
 		log_error("mysql_real_query error:%s, sql:%s", get_error(), cmd.str);
@@ -258,13 +255,10 @@ int load_site_list(mydb_t * mdb, cw_site_list_t ** list)
 
 	LIST_INIT(site_list, head);
 
-	if (string_printf(&cmd, "select site_info.id, name, url, md5, level, "
-			  "hot_part_begin, hot_part_end, class_tag.part_begin, class_tag.part_end, "
-			  "list_tag_id, content_tag_id, html_filter_id, remote_mysql_id from site_info, class_tag "
-			  "where status = 1 and site_info.class_tag_id = class_tag.id and mod(site_info.id, %d) = %d", server.max_proc, server.cur_proc) == MRT_ERR) {
-		log_error("string_printf error:%s", get_error());
-		return MRT_ERR;
-	}
+	string_printf(&cmd, "select site_info.id, name, url, md5, level, "
+		      "hot_part_begin, hot_part_end, class_tag.part_begin, class_tag.part_end, "
+		      "list_tag_id, content_tag_id, html_filter_id, remote_mysql_id from site_info, class_tag "
+		      "where status = 1 and site_info.class_tag_id = class_tag.id and mod(site_info.id, %d) = %d", server.max_proc, server.cur_proc);
 
 	if (mydb_query(mdb, &cmd)) {
 		log_error("mydb_query error:%s, sql:%s.", get_error(), cmd.str);
@@ -494,7 +488,7 @@ int content_info_save(cw_site_t * site, cw_content_t * ct)
 
 	format_mysql_string(ct->content.str);
 
-	M_ciril(string_printf(&cmd, "call cwindPushArticle('%s', '%s', '%s')", ct->second_class.str, ct->caption.str, ct->content.str), "string print sql error.");
+	string_printf(&cmd, "call cwindPushArticle('%s', '%s', '%s')", ct->second_class.str, ct->caption.str, ct->content.str);
 
 	if (mydb_query_int(site->mysql_info, &cmd, &nid) == MRT_ERR) {
 		log_error("exec sql cmd error:%s, sql:%s.", get_error(), cmd.str);

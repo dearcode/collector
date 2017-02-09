@@ -102,7 +102,7 @@ int string_base64_encode(string_t * src, string_t * dest)
 			break;
 		}
 
-		M_cirinl(string_cats(dest, tmp));
+		string_cats(dest, tmp);
 	}
 	return MRT_OK;
 }
@@ -205,7 +205,7 @@ int string_base64_decode(string_t * src, string_t * dest)
 			if ((src_c[src_pos + 2] != '=' || src_c[src_pos + 3] != '=')) {
 				return MRT_ERR;
 			}
-			M_cirinl(string_catb(dest, output, 1));
+			string_catb(dest, output, 1);
 			src_pos += 4;
 			break;
 		}
@@ -216,13 +216,13 @@ int string_base64_decode(string_t * src, string_t * dest)
 			if ((src_c[src_pos + 3] != '=')) {
 				return MRT_ERR;
 			}
-			M_cirinl(string_catb(dest, output, 2));
+			string_catb(dest, output, 2);
 			src_pos += 4;
 			break;
 		}
 
 		output[2] = ((input[2] << 6) & 0xc0) | input[3];
-		M_cirinl(string_catb(dest, output, 3));
+		string_catb(dest, output, 3);
 		src_pos += 4;
 	}
 

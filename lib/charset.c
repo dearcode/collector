@@ -76,17 +76,12 @@ int charset_convert_string(char *from_set, char *to_set, string_t * from_str)
 	//log_debug("from:%s, to:%s, fsize:%ld tsize:%ld.", from_set, to_set, fsize, tsize);
 
 	if (iconv(ct, &pf, &fsize, &pt, &tsize) == MRT_ERR) {
-		set_error("iconv error, from:%s, to:%s, error:%m, fsize:%lu tsize:%lu.", from_set, to_set, fsize,
-			  tsize);
+		set_error("iconv error, from:%s, to:%s, error:%m, fsize:%lu tsize:%lu.", from_set, to_set, fsize, tsize);
 		M_free(to_str);
 		return MRT_ERR;
 	}
 
-	if (string_copys(from_str, to_str) == MRT_ERR) {
-		log_error("string_copy error:%s", get_error());
-		M_free(to_str);
-		return MRT_ERR;
-	}
+	string_copys(from_str, to_str);
 	M_free(to_str);
 
 	return MRT_OK;

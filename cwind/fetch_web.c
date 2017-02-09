@@ -172,21 +172,12 @@ int fetch_article_url(cw_site_t * site, cw_class_t * class, html_page_t * page)
 		}
 
 		if (content->first_class.len) {
-			if (string_copy(&content->first_class, &class->first_class) == MRT_ERR) {
-				log_error("string_copy first_class error:%s", get_error());
-				//    continue;
-			}
+			string_copy(&content->first_class, &class->first_class);
 		}
 
-		if (string_copy(&content->second_class, &class->second_class) == MRT_ERR) {
-			log_error("string_copy second_class error:%s", get_error());
-			continue;
-		}
+		string_copy(&content->second_class, &class->second_class);
 
-		if (string_copy(&content->url_real, &url) == MRT_ERR) {
-			log_error("string_copy url_preview error:%s", get_error());
-			continue;
-		}
+        string_copy(&content->url_real, &url);
 
 		LIST_INSERT_HEAD(site->content_list, head, content, node);
 
@@ -256,11 +247,7 @@ int fix_content_image(html_page_t * page, string_t * content)
 		}
 		string_free(&simg);
 
-		if (string_copy(&hurl, &url) == MRT_ERR) {
-			log_error("string_copy hurl error:%s", get_error());
-			string_free(&url);
-			return MRT_ERR;
-		}
+		string_copy(&hurl, &url);
 
 		html_fix_url(page, &url);
 
@@ -272,12 +259,7 @@ int fix_content_image(html_page_t * page, string_t * content)
 		}
 		string_free(&url);
 
-		if (string_replace(content, hurl.str, limg.str) == MRT_ERR) {
-			log_error("string_replace error:%s", get_error());
-			string_free(&hurl);
-			string_free(&limg);
-			return MRT_ERR;
-		}
+		string_replace(content, hurl.str, limg.str);
 
 		content->idx = content->str + len;
 		log_info("replace img src, from:%s to:%s", hurl.str, limg.str);
@@ -449,15 +431,9 @@ int fetch_class(cw_site_t * site, html_page_t * page)
 			caption.len = strlen(caption.str);
 		}
 
-		if (string_copy(&class->url, &url) == MRT_ERR) {
-			log_error("string_copy url error:%s", get_error());
-			continue;
-		}
+		string_copy(&class->url, &url);
 
-		if (string_copy(&class->second_class, &caption) == MRT_ERR) {
-			log_error("string_copy second_class error:%s", get_error());
-			continue;
-		}
+		string_copy(&class->second_class, &caption);
 
 		LIST_INSERT_HEAD(site->class_list, head, class, node);
 
@@ -488,10 +464,7 @@ int fetch_dispatch(cw_site_t * site)
 	s_zero(page);
 
 	LIST_FOREACH(class, node, site->class_list, head) {
-		if (string_copy(&url, &class->url) == MRT_ERR) {
-			log_error("string_copys error:%s", get_error());
-			return -1;
-		}
+		string_copy(&url, &class->url);
 
 		printf("will fetch class first:%s second:%s\n", class->first_class.str, class->second_class.str);
 		//log_info("will fetch class first:%s second:%s", class->first_class.str, class->second_class.str);

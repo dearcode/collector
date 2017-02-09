@@ -74,35 +74,35 @@ int string_fetch(string_t * src, char *begin, char *end, string_t * dest);
 //int string_move_fetch(string_t *src, string_t *begin, string_t *end, string_t *dest);
 int string_move_fetch(string_t * src, char *begin, char *end, string_t * dest);
 
-int string_rtrim(string_t * src);
+void string_rtrim(string_t * src);
 
-int string_ltrim(string_t * src);
+void string_ltrim(string_t * src);
 
-int string_printf(string_t * str, const char *fmt, ...);
+void string_printf(string_t * str, const char *fmt, ...);
 
 void string_add(string_t * dat, const char *fmt, ...);
 
 void string_zero(string_t * src);
 
-int string_cat(string_t * dat, string_t * src);
+void string_cat(string_t * dat, string_t * src);
 
-int string_catb(string_t * dat, char *src, int len);
+void string_catb(string_t * dat, char *src, int len);
 
-int string_cats(string_t * dat, char *src);
+void string_cats(string_t * dat, char *src);
 
-int string_copy(string_t * dat, string_t * src);
+void string_copy(string_t * dat, string_t * src);
 
-int string_copys(string_t * dat, char *src);
+void string_copys(string_t * dat, char *src);
 
-int string_copyb(string_t * dat, char *src, int len);
+void string_copyb(string_t * dat, char *src, int len);
 
 //功能：
 //      将字符串中的from替换为to        替换所有匹配的from
-int string_replace(string_t * src, char *from, char *to);
+void string_replace(string_t * src, char *from, char *to);
 
 //功能：
 //      将字符串中from_begin开始到from_end结束部分替换为to      替换所有匹配的from
-int string_replace_part(string_t * src, char *from_begin, char *from_end, char *to);
+void string_replace_part(string_t * src, char *from_begin, char *from_end, char *to);
 
 //功能：
 //      将src中字符串进行urlencode编码后存入dest中
@@ -125,7 +125,7 @@ int charset_convert(char *f_set, char *t_set, char *f_str, size_t f_len, char *t
 //int charset_convert_string(char *from_set, char *to_set, string_t *from_str, string_t *to_str);
 int charset_convert_string(char *from_set, char *to_set, string_t * from_str);
 
-int string_realloc(string_t * src, int32_t size);
+void string_realloc(string_t * src, int32_t size);
 
 int string_base64_encode(string_t * src, string_t * dest);
 

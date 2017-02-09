@@ -16,7 +16,6 @@ JSP_hot_url	distribute_web.c	24;"	d	file:
 JSP_index_url	distribute_web.c	26;"	d	file:
 JSP_new_url	distribute_web.c	23;"	d	file:
 JSP_score_url	distribute_web.c	25;"	d	file:
-LDFLAGS	Makefile	/^LDFLAGS= $(shell mysql_config --libs) -rdynamic -liconv $(LIBS)$/;"	m
 LIBS	Makefile	/^LIBS=..\/lib-html\/libhtml.a ..\/lib\/libmrt.a $/;"	m
 MAX_CONTENT	cwind.h	9;"	d
 MAX_SQL	cwind.h	10;"	d
