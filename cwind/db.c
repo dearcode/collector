@@ -284,6 +284,7 @@ int load_site_list(mydb_t * mdb, site_list_t ** list)
 		site_info->all_sum = 0;
 		site_info->recv_num = 0;
 
+
 		log_info("site_id:%s, site_name:%s, site_url:%s, site_md5:%s, site_level:%s", row[0], row[1], row[2], row[3], row[4]);
 
 		LIST_INSERT_HEAD(site_list, head, site_info, node);

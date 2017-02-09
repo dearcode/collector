@@ -6,19 +6,17 @@
 #include <syslog.h>
 #include <execinfo.h>
 
-extern char *error_msg;
+extern char    *error_msg;
 
-S_logger logger;
+logger_t        logger;
 
-S_level log_level_ary[] = {
-	{.level = MRT_DEBUG,.desc = "DEBUG"},
-	{.level = MRT_INFO,.desc = "INFO"},
-	{.level = MRT_WARNING,.desc = "WARNING"},
-	{.level = MRT_ERROR,.desc = "ERROR"},
-	{.level = MRT_FATAL,.desc = "FATAL"}
+logger_level_t  log_level_ary[] = {
+	{.level = MRT_DEBUG,.desc = "DEBUG",.color = "\033[0;37m"},
+	{.level = MRT_INFO,.desc = "INFO",.color = "\033[0;32m"},
+	{.level = MRT_WARNING,.desc = "WARNING",.color = "\033[0;33m"},
+	{.level = MRT_ERROR,.desc = "ERROR",.color = "\033[0;31m"},
+	{.level = MRT_FATAL,.desc = "FATAL",.color = "\033[0;31m"}
 };
-
-static int logger_start = 0;
 
 static inline int level_check(int err_code)
 {
@@ -35,42 +33,36 @@ static int path_check(char *path)
 	return MRT_OK;
 }
 
-int open_log()
+int open_log(struct tm *ntm)
 {
-	time_t now;
-	struct tm *ntm;
-	mode_t old_umask;
-	int logfd = -1;
-	char ctm[MAX_TIME] = { 0 };
+	mode_t          old_umask;
 
-	time(&now);
-	ntm = localtime(&now);
-
-	strftime(ctm, sizeof(ctm), "%Y%m%d", ntm);
-
-	if ((logger.nfd > 0) && !strcmp(logger.otm, ctm)) {
-		logfd = logger.nfd;
-	} else {
-		if (logger.nfd > 0)
-			close(logger.nfd);
-
-		char nstr[MAX_PATH] = { 0 };
-
-		sprintf(nstr, "%s/%s_%s.log", logger.path, logger.prefix, ctm);
-
-		old_umask = umask(0111);
-
-		if ((logfd = open(nstr, O_WRONLY | O_APPEND | O_CREAT, 0666)) == MRT_ERR) {
-			set_error("%s open file:[%s] error, %m.", __func__, nstr);
-			umask(old_umask);
-			return MRT_ERR;
+	if (!logger.start) {
+		if (logger.fp == NULL) {
+			logger.fp = stdout;
+            logger.enable_color = 1;
 		}
-
-		s_zero(logger.otm);
-		sprintf(logger.otm, "%s", ctm);
-		logger.nfd = logfd;
-		umask(old_umask);
+		return MRT_OK;
 	}
+
+	if (logger.fp != NULL && logger.current_day == ntm->tm_mday) {
+		return MRT_OK;
+	}
+
+	if (logger.fp != NULL)
+		fclose(logger.fp);
+
+	strftime(logger.path + logger.prefix_len, sizeof(logger.path) - logger.prefix_len, "_%Y%m%d.log", ntm);
+
+	old_umask = umask(0111);
+
+	if ((logger.fp = fopen(logger.path, "a+")) == NULL) {
+		set_error("%s open file:[%s] error, %m.", __func__, logger.path);
+		umask(old_umask);
+		return MRT_ERR;
+	}
+
+	umask(old_umask);
 
 	return MRT_OK;
 }
@@ -98,92 +90,58 @@ int logger_init(char *path, char *prefix, int level)
 
 	 */
 
-	strcpy(logger.path, path);
+	logger.prefix_len = sprintf(logger.path, "%s/%s", path, prefix);
 	//snprintf(logger.prefix, sizeof(logger.prefix), "%s_%s", hostname, prefix);
-	snprintf(logger.prefix, sizeof(logger.prefix), "%s", prefix);
 
-	if ((open_log() == MRT_ERR)) {
-		set_error("%s open logfile error.\n", __func__);
-		return MRT_ERR;
-	}
-
-	logger_start = 1;
+	logger.start = 1;
+    logger.enable_color = 0;
 
 	return MRT_OK;
 }
 
-
 int logger_write(int type, char *level, const char *fmt, ...)
 {
-	static int body_size = 0;
-	static char *body = NULL;
+	va_list         args;
+	time_t          now;
+	struct tm       t;
 
-	va_list ap;
-	int h = 0, b = 0;
-	time_t now;
-	struct tm t;
-
-#define POSTFIX 2
+	pthread_mutex_lock(&logger.mtx);
 
 	time(&now);
 	localtime_r(&now, &t);
 
-	do {
-		if (b > body_size - POSTFIX) {
-			if (!(body = realloc(body, b + POSTFIX))) {
-				set_error("realloc buffer size:%d, error:%m", b + 1);
-				return MRT_ERR;
-			}
-			body_size = b + POSTFIX;
-		}
+	open_log(&t);
 
-		h = snprintf(body, body_size, "%.2d:%.2d:%.2d [%u] [%s] ", t.tm_hour, t.tm_min, t.tm_sec, getpid(), level);
-		if (h >= body_size) {
-			b = h;
-			continue;
-		}
+    if (logger.enable_color) {
+        fprintf(logger.fp, log_level_ary[type - 1].color);
+    }
 
-		va_start(ap, fmt);
-		b = vsnprintf(body + h, body_size - h, fmt, ap);
-		va_end(ap);
+	fprintf(logger.fp, "%.2d:%.2d:%.2d [%u] [%s] ", t.tm_hour, t.tm_min, t.tm_sec, getpid(), level);
 
-		b += h;
+	va_start(args, fmt);
+	vfprintf(logger.fp, fmt, args);
+	va_end(args);
 
-	} while (b > body_size - POSTFIX);
+    if (logger.enable_color) {
+        fprintf(logger.fp, "\033[0m");
+    }
 
-	body[body_size - POSTFIX] = '\n';
-	body[body_size - 1] = 0;
-
-	if (!logger_start) {
-		printf("%s", body);
-		return MRT_SUC;
-	}
-
-	if (open_log() == MRT_OK) {
-		if (write(logger.nfd, body, body_size) < 0) {
-			set_error("Write log file error, file:%s, %m.", logger.prefix);
-			return MRT_ERR;
-		}
-	}
+	pthread_mutex_unlock(&logger.mtx);
 
 	return MRT_SUC;
 }
 
 int logger_destroy()
 {
-	close(logger.nfd);
+	fclose(logger.fp);
 	s_zero(logger);
-
 	return MRT_OK;
 }
 
 void log_backtrace()
 {
-	void *array[16];
-	size_t size;
-
+	void           *array[16];
+	size_t          size;
 	size = backtrace(array, 16);
-
-	backtrace_symbols_fd(array, size, logger.nfd);
+	backtrace_symbols_fd(array, size, fileno(logger.fp));
 }
-

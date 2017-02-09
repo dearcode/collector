@@ -239,11 +239,11 @@ continue;
 #define M_free(val) memory_free(val,  __LINE__, (char *)__func__)
 
 #ifndef __DEBUG__
-#define log_fatal(fmt, ...) logger_write(MRT_FATAL, "FATAL", "%s "fmt, __func__, ##__VA_ARGS__)
-#define log_error(fmt, ...) logger_write(MRT_ERROR, "ERROR", "%s "fmt, __func__, ##__VA_ARGS__)
-#define log_warning(fmt, ...) logger_write(MRT_WARNING, "WARNING", "%s "fmt, __func__, ##__VA_ARGS__)
-#define log_info(fmt, ...) logger_write(MRT_INFO, "INFO", "%s "fmt, __func__, ##__VA_ARGS__)
-#define log_debug(fmt, ...) logger_write(MRT_DEBUG, "DEBUG", "%s "fmt, __func__, ##__VA_ARGS__)
+#define log_fatal(fmt, ...) logger_write(MRT_FATAL, "FATAL", "%s:%d %s "fmt"\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
+#define log_error(fmt, ...) logger_write(MRT_ERROR, "ERROR", "%s:%d %s "fmt"\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
+#define log_warning(fmt, ...) logger_write(MRT_WARNING, "WARNING", "%s:%d %s "fmt"\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
+#define log_info(fmt, ...) logger_write(MRT_INFO, "INFO", "%s:%d %s "fmt"\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
+#define log_debug(fmt, ...) logger_write(MRT_DEBUG, "DEBUG", "%s:%d %s "fmt"\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__)
 
 #else
 #define log_fatal(fmt, ...) printf("%s:%d "fmt"\n", __func__, __LINE__, ##__VA_ARGS__)

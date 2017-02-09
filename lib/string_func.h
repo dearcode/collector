@@ -80,7 +80,7 @@ void string_ltrim(string_t * src);
 
 void string_printf(string_t * str, const char *fmt, ...);
 
-void string_add(string_t * dat, const char *fmt, ...);
+void string_append(string_t * dat, const char *fmt, ...);
 
 void string_zero(string_t * src);
 

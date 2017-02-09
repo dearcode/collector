@@ -31,7 +31,7 @@ int load_site_info(mydb_t * mdb, site_t * site)
 
 int server_start(void *dat)
 {
-	site_t      *site = NULL;
+	site_t         *site = NULL;
 
 	if (load_site_list(server.cwind_db, &server.site_list) == MRT_ERR) {
 		log_error("%s load site list error.", __func__);
@@ -89,10 +89,11 @@ int main(int argc, char *argv[])
 		return MRT_ERR;
 	}
 
+
 	server.max_proc = 1;
 	server.cur_proc = 0;
 
-	printf("%s max process:%d, current number:%d\n", __func__, server.max_proc, server.cur_proc);
+	log_debug("max process:%d, current number:%d", server.max_proc, server.cur_proc);
 
 	strcpy(server.html_root, ".");
 
