@@ -24,16 +24,12 @@ DROP TABLE IF EXISTS `content`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `content` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `part_begin` varchar(256) NOT NULL,
-  `part_end` varchar(256) NOT NULL,
-  `href_begin` varchar(256) NOT NULL,
-  `href_end` varchar(256) NOT NULL,
+  `body_begin` varchar(256) NOT NULL,
+  `body_end` varchar(256) NOT NULL,
   `date_begin` varchar(256) NOT NULL,
   `date_end` varchar(256) NOT NULL,
-  `pic_begin` varchar(256) NOT NULL,
-  `pic_end` varchar(256) NOT NULL,
-  `caption_begin` varchar(256) NOT NULL,
-  `caption_end` varchar(256) NOT NULL,
+  `title_begin` varchar(256) NOT NULL,
+  `title_end` varchar(256) NOT NULL,
   `desc_end` varchar(256) NOT NULL,
   `desc_begin` varchar(256) NOT NULL,
   `content_begin` varchar(256) NOT NULL,
@@ -88,18 +84,20 @@ DROP TABLE IF EXISTS `list`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `list` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `list_part_begin` varchar(256) NOT NULL,
-  `list_part_end` varchar(256) NOT NULL,
-  `href_part_begin` varchar(256) NOT NULL,
-  `href_part_end` varchar(256) NOT NULL,
-  `href_begin` varchar(256) NOT NULL,
-  `href_end` varchar(256) NOT NULL,
-  `caption_begin` varchar(256) NOT NULL,
-  `caption_end` varchar(256) NOT NULL,
-  `page_part_begin` varchar(256) NOT NULL,
-  `page_part_end` varchar(256) NOT NULL,
-  `next_caption` varchar(64) NOT NULL DEFAULT '0',
-  `update_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(32) NOT NULL,
+  `body_begin` varchar(256) NOT NULL COMMENT '代码区域开始',
+  `body_end` varchar(256) NOT NULL COMMENT '代码区域结束',
+  `item_begin` varchar(256) NOT NULL COMMENT '每一个链接区域开始',
+  `item_end` varchar(256) NOT NULL COMMENT '链接区域结束',
+  `url_begin` varchar(256) NOT NULL COMMENT '链接开始',
+  `url_end` varchar(256) NOT NULL COMMENT '链接结束',
+  `title_begin` varchar(256) NOT NULL COMMENT '文章标题开始',
+  `title_end` varchar(256) NOT NULL COMMENT '文章标题结束',
+  `page_begin` varchar(256) NOT NULL,
+  `page_end` varchar(256) NOT NULL,
+  `next_label` varchar(32) NOT NULL DEFAULT '0',
+  `ctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mtime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -122,33 +120,13 @@ CREATE TABLE `relation` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `site_5_log`
+-- Table structure for table `site`
 --
 
-DROP TABLE IF EXISTS `site_5_log`;
+DROP TABLE IF EXISTS `site`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `site_5_log` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `url_crc32` bigint(33) NOT NULL,
-  `url` varchar(128) NOT NULL,
-  `type` int(10) unsigned NOT NULL COMMENT '类型，1：列表页，2：内容页',
-  `fetch_date` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '最后更新日期',
-  `status` int(11) unsigned NOT NULL COMMENT '1:采集成功 2:采集失败了',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_url` (`url_crc32`,`url`) USING BTREE,
-  KEY `idx_type` (`type`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=3214 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `site_info`
---
-
-DROP TABLE IF EXISTS `site_info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `site_info` (
+CREATE TABLE `site` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `status` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `name` varchar(64) NOT NULL DEFAULT '',
@@ -193,4 +171,4 @@ CREATE TABLE `store` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-02-09 18:07:13
+-- Dump completed on 2017-02-21 15:13:48

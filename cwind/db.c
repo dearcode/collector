@@ -96,9 +96,9 @@ int load_content_tag(mydb_t * mdb, site_t * site)
 	char            sqlcmd[MAX_LINE] = { 0 };
 	string_t        cmd = { 0 };
 
-	sprintf(sqlcmd, "select part_begin, part_end, href_begin, href_end, "
-		"date_begin, date_end, pic_begin, pic_end, "
-		"desc_begin, desc_end, caption_begin, caption_end, content_begin, content_end from content where id=%d", site->content_id);
+	sprintf(sqlcmd, "select "
+		"body_begin, body_end, date_begin, date_end, desc_begin, desc_end, title_begin, title_end, content_begin, content_end "
+		"from content where id=%d", site->content_id);
 
 	cmd.str = sqlcmd;
 	cmd.len = strlen(sqlcmd);
@@ -115,20 +115,16 @@ int load_content_tag(mydb_t * mdb, site_t * site)
 	}
 
 	if ((row = mysql_fetch_row(res))) {
-		strcpy(site->content_tag.part_begin, row[0]);
-		strcpy(site->content_tag.part_end, row[1]);
-		strcpy(site->content_tag.href_begin, row[2]);
-		strcpy(site->content_tag.href_end, row[3]);
-		strcpy(site->content_tag.date_begin, row[4]);
-		strcpy(site->content_tag.date_end, row[5]);
-		strcpy(site->content_tag.pic_begin, row[6]);
-		strcpy(site->content_tag.pic_end, row[7]);
-		strcpy(site->content_tag.desc_begin, row[8]);
-		strcpy(site->content_tag.desc_end, row[9]);
-		strcpy(site->content_tag.caption_begin, row[10]);
-		strcpy(site->content_tag.caption_end, row[11]);
-		strcpy(site->content_tag.content_begin, row[12]);
-		strcpy(site->content_tag.content_end, row[13]);
+		strcpy(site->content_tag.body_begin, row[0]);
+		strcpy(site->content_tag.body_end, row[1]);
+		strcpy(site->content_tag.date_begin, row[2]);
+		strcpy(site->content_tag.date_end, row[3]);
+		strcpy(site->content_tag.desc_begin, row[4]);
+		strcpy(site->content_tag.desc_end, row[5]);
+		strcpy(site->content_tag.title_begin, row[6]);
+		strcpy(site->content_tag.title_end, row[7]);
+		strcpy(site->content_tag.content_begin, row[8]);
+		strcpy(site->content_tag.content_end, row[9]);
 	}
 
 	mysql_free_result(res);
@@ -144,8 +140,8 @@ int load_list_tag(mydb_t * mdb, site_t * site)
 	string_t        cmd = { 0 };
 
 	sprintf(sqlcmd,
-		"select list_part_begin, list_part_end, href_part_begin, href_part_end, "
-		"href_begin, href_end, caption_begin, caption_end, page_part_begin, page_part_end, next_caption from list where id=%d", site->list_id);
+		"select body_begin, body_end, item_begin, item_end, "
+		"url_begin, url_end, title_begin, title_end, page_begin, page_end, next_label from list where id=%d", site->list_id);
 
 	cmd.str = sqlcmd;
 	cmd.len = strlen(sqlcmd);
@@ -162,17 +158,17 @@ int load_list_tag(mydb_t * mdb, site_t * site)
 	}
 
 	if ((row = mysql_fetch_row(res))) {
-		strcpy(site->list_tag.list_part_begin, row[0]);
-		strcpy(site->list_tag.list_part_end, row[1]);
-		strcpy(site->list_tag.href_part_begin, row[2]);
-		strcpy(site->list_tag.href_part_end, row[3]);
-		strcpy(site->list_tag.href_begin, row[4]);
-		strcpy(site->list_tag.href_end, row[5]);
-		strcpy(site->list_tag.caption_begin, row[6]);
-		strcpy(site->list_tag.caption_end, row[7]);
-		strcpy(site->list_tag.page_part_begin, row[8]);
-		strcpy(site->list_tag.page_part_end, row[9]);
-		strcpy(site->list_tag.next_caption, row[10]);
+		strcpy(site->list_tag.body_begin, row[0]);
+		strcpy(site->list_tag.body_end, row[1]);
+		strcpy(site->list_tag.item_begin, row[2]);
+		strcpy(site->list_tag.item_end, row[3]);
+		strcpy(site->list_tag.url_begin, row[4]);
+		strcpy(site->list_tag.url_end, row[5]);
+		strcpy(site->list_tag.title_begin, row[6]);
+		strcpy(site->list_tag.title_end, row[7]);
+		strcpy(site->list_tag.page_begin, row[8]);
+		strcpy(site->list_tag.page_end, row[9]);
+		strcpy(site->list_tag.next_label, row[10]);
 	} else {
 		log_error("no found record error, sql:%s.", sqlcmd);
 		return MRT_ERR;
@@ -249,8 +245,8 @@ int load_site_list(mydb_t * mdb, site_list_t ** list)
 
 	LIST_INIT(site_list, head);
 
-	string_printf(&cmd, "select site_info.id, name, url, md5, level, "
-		      "area_begin, area_end, list_id, content_id, store_id from site_info where status = 1 and mod(site_info.id, %d) = %d", server.max_proc, server.cur_proc);
+	string_printf(&cmd, "select id, name, url, md5, level, "
+		      "area_begin, area_end, list_id, content_id, store_id from site where status = 1 and mod(id, %d) = %d", server.max_proc, server.cur_proc);
 
 	if (mydb_query(mdb, &cmd)) {
 		log_error("mydb_query error:%s, sql:%s.", get_error(), cmd.str);

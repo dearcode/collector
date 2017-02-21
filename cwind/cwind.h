@@ -41,23 +41,17 @@ typedef struct {
 
 //内容，最终显示页
 typedef struct {
-	char            part_begin[SMALL_STR];
-	char            part_end[SMALL_STR];
+	char            body_begin[SMALL_STR];
+	char            body_end[SMALL_STR];
 
-	char            href_begin[SMALL_STR];
-	char            href_end[SMALL_STR];
-
-	char            caption_begin[SMALL_STR];
-	char            caption_end[SMALL_STR];
+	char            title_begin[SMALL_STR];
+	char            title_end[SMALL_STR];
 
 	char            date_begin[SMALL_STR];
 	char            date_end[SMALL_STR];
 
 	char            oprate_begin[SMALL_STR];
 	char            oprate_end[SMALL_STR];
-
-	char            pic_begin[SMALL_STR];
-	char            pic_end[SMALL_STR];
 
 	char            desc_begin[SMALL_STR];
 	char            desc_end[SMALL_STR];
@@ -68,22 +62,22 @@ typedef struct {
 } tag_content_t;
 
 typedef struct {
-	char            list_part_begin[SMALL_STR];
-	char            list_part_end[SMALL_STR];
+	char            body_begin[SMALL_STR];
+	char            body_end[SMALL_STR];
 
-	char            href_part_begin[SMALL_STR];
-	char            href_part_end[SMALL_STR];
+	char            item_begin[SMALL_STR];
+	char            item_end[SMALL_STR];
 
-	char            href_begin[SMALL_STR];
-	char            href_end[SMALL_STR];
+	char            url_begin[SMALL_STR];
+	char            url_end[SMALL_STR];
 
-	char            caption_begin[SMALL_STR];
-	char            caption_end[SMALL_STR];
+	char            title_begin[SMALL_STR];
+	char            title_end[SMALL_STR];
 
-	char            page_part_begin[SMALL_STR];
-	char            page_part_end[SMALL_STR];
+	char            page_begin[SMALL_STR];
+	char            page_end[SMALL_STR];
 
-	char            next_caption[SMALL_STR];
+	char            next_label[SMALL_STR];
 
 } tag_list_t;
 

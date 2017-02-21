@@ -88,14 +88,14 @@ int fetch_next_page(site_t * site, html_page_t * page, string_t * url)
 
 	s_zero(part);
 
-	if (string_fetch(&page->data, ltag->page_part_begin, ltag->page_part_end, &part) == MRT_ERR) {
+	if (string_fetch(&page->data, ltag->page_begin, ltag->page_end, &part) == MRT_ERR) {
 		log_error("No found page part error:%s.", get_error());
 		return MRT_ERR;
 	}
 
 	while (!html_move_fetch_href(&part, url, NULL)) {
 		/*
-		   if(strcmp(caption, ltag->next_caption) == 0)
+		   if(strcmp(caption, ltag->next_label) == 0)
 		   {
 		   html_fix_url(page, url);
 		   return MRT_OK;
@@ -117,7 +117,7 @@ int fetch_next_page(site_t * site, html_page_t * page, string_t * url)
 }
 
 //功能：
-//      把当前页面的url收集下, 取ltag->caption_begin与ltag->caption_end之间的url，一直找到没有
+//      把当前页面的url收集下, 取ltag->title_begin与ltag->title_end之间的url，一直找到没有
 //
 int fetch_article_url(site_t * site, html_page_t * page)
 {
@@ -131,15 +131,15 @@ int fetch_article_url(site_t * site, html_page_t * page)
 	s_zero(caption);
 	s_zero(item);
 
-	if (string_move_fetch(&page->data, ltag->list_part_begin, ltag->list_part_end, &list) == MRT_ERR) {
+	if (string_move_fetch(&page->data, ltag->body_begin, ltag->body_end, &list) == MRT_ERR) {
 		log_error("string_move_fetch list error:%s", get_error());
 		return MRT_ERR;
 	}
 
-	while (string_move_fetch(&list, ltag->href_begin, ltag->href_end, &part)
+	while (string_move_fetch(&list, ltag->url_begin, ltag->url_end, &part)
 	       == MRT_SUC) {
-		if (*ltag->caption_begin && *ltag->caption_end) {
-			if (string_fetch(&part, ltag->caption_begin, ltag->caption_end, &item) == MRT_ERR) {
+		if (*ltag->title_begin && *ltag->title_end) {
+			if (string_fetch(&part, ltag->title_begin, ltag->title_end, &item) == MRT_ERR) {
 				log_error("find href error:%s, part:%s", get_error(), part.str);
 				continue;
 			}
@@ -195,14 +195,14 @@ int fetch_joke_url(site_t *site, html_page_t *page, char *part)
     char caption[MAX_CAPTION] = {0};
     cw_list_tag_t *ltag = site->list_tag;
 
-    for(;part && (part = str_jump_tag(part, ltag->href_part_begin)); (part = str_jump_tag(part, ltag->href_part_end)))
+    for(;part && (part = str_jump_tag(part, ltag->item_begin)); (part = str_jump_tag(part, ltag->item_end)))
     {
-        M_cicl(comm_gets(part, ltag->caption_begin, ltag->caption_end, caption, sizeof(caption)),
+        M_cicl(comm_gets(part, ltag->title_begin, ltag->title_end, caption, sizeof(caption)),
                "no found caption:%s", part);
-        M_cicl(comm_gets(part, ltag->href_begin, ltag->href_end, url, sizeof(url)),
+        M_cicl(comm_gets(part, ltag->url_begin, ltag->url_end, url, sizeof(url)),
                "no found url:%s", part);
 
-        //printf("start:%s,end:%s, part:%s\n",  ltag->href_begin, ltag->href_end, part);
+        //printf("start:%s,end:%s, part:%s\n",  ltag->url_begin, ltag->url_end, part);
         M_cvril((content = M_alloc(sizeof(*content))), "malloc new content error.");
         strcpy(content->url_real.str, url);
         html_fix_url(page, content->url_real.str);
@@ -307,12 +307,12 @@ int fetch_article_content(site_t * site)
 				break;
 			}
 
-			if (string_fetch(&page.data, ctag->part_begin, ctag->part_end, &part) == MRT_ERR) {
+			if (string_fetch(&page.data, ctag->body_begin, ctag->body_end, &part) == MRT_ERR) {
 				log_error("string_fetch part error:%s, url:%s", get_error(), content->url_real.str);
 				break;
 			}
 
-			if (string_fetch(&part, ctag->caption_begin, ctag->caption_end, &content->caption) == MRT_ERR) {
+			if (string_fetch(&part, ctag->title_begin, ctag->title_end, &content->caption) == MRT_ERR) {
 				log_error("string_fetch caption error:%s url:%s, src:%s", get_error(), content->url_real.str, part.str);
 				break;
 			}
