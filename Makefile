@@ -1,6 +1,6 @@
-all: lib lib-html cwind
+all: lib lib-html collector
 
-.PHONY: lib lib-html cwind
+.PHONY: lib lib-html collector
 
 
 lib:
@@ -9,12 +9,12 @@ lib:
 lib-html:
 	cd lib-html; make DEBUG=$(DEBUG); cd ..; 
 
-cwind:
-	cd cwind; make DEBUG=$(DEBUG); cd ..; 
+collector:
+	cd server; make DEBUG=$(DEBUG); cd ..; 
 
 
 clean:
-	cd cwind; make clean; cd ..; 
+	cd server; make clean; cd ..; 
 	cd lib; make clean; cd ..; 
 	cd lib-html; make clean; cd ..; 
 
